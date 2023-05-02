@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.poFile org.eventb.core.poStamp="0">
+    <org.eventb.core.poPredicateSet name="ABSHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poIdentifier name="Gare" org.eventb.core.type="ℙ(Gare)"/>
+        <org.eventb.core.poIdentifier name="Traffic_Light" org.eventb.core.type="ℙ(Traffic_Light)"/>
+        <org.eventb.core.poIdentifier name="Quais" org.eventb.core.type="ℙ(Quais)"/>
+        <org.eventb.core.poIdentifier name="Huy_Nam" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Ott_Nam" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Lvn_Lge" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Lge_Huy" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Bxl_Lvn" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Ottignies" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Liege" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Lge_Lvn" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Nam_Huy" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Ott_Bxl" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Bruxelles" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Leuven" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Nam_Ott" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Lvn_Bxl" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Bxl_Ott" org.eventb.core.type="Traffic_Light"/>
+        <org.eventb.core.poIdentifier name="Quai1" org.eventb.core.type="Quais"/>
+        <org.eventb.core.poIdentifier name="Quai2" org.eventb.core.type="Quais"/>
+        <org.eventb.core.poIdentifier name="Huy" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Namur" org.eventb.core.type="Gare"/>
+        <org.eventb.core.poIdentifier name="Huy_Lge" org.eventb.core.type="Traffic_Light"/>
+    </org.eventb.core.poPredicateSet>
+    <org.eventb.core.poPredicateSet name="ALLHYP" org.eventb.core.parentSet="/V8/Context.bpo|org.eventb.core.poFile#Context|org.eventb.core.poPredicateSet#ABSHYP" org.eventb.core.poStamp="0">
+        <org.eventb.core.poPredicate name="PRD0" org.eventb.core.predicate="partition(Gare,{Namur},{Bruxelles},{Liege},{Huy},{Ottignies},{Leuven})" org.eventb.core.source="/V8/Context.buc|org.eventb.core.contextFile#Context|org.eventb.core.axiom#_2zebsOE-Ee2KaoH_Krztlw"/>
+        <org.eventb.core.poPredicate name="PRD1" org.eventb.core.predicate="partition(Quais,{Quai1},{Quai2})" org.eventb.core.source="/V8/Context.buc|org.eventb.core.contextFile#Context|org.eventb.core.axiom#_2zebseE-Ee2KaoH_Krztlw"/>
+        <org.eventb.core.poPredicate name="PRD2" org.eventb.core.predicate="partition(Traffic_Light,{Lvn_Lge},{Lge_Lvn},{Lvn_Bxl},{Bxl_Lvn},{Bxl_Ott},{Ott_Bxl},{Ott_Nam},{Nam_Ott},{Huy_Nam},{Nam_Huy},{Lge_Huy},{Huy_Lge})" org.eventb.core.source="/V8/Context.buc|org.eventb.core.contextFile#Context|org.eventb.core.axiom#_2zebsuE-Ee2KaoH_Krztlw"/>
+    </org.eventb.core.poPredicateSet>
+</org.eventb.core.poFile>
