@@ -88,23 +88,4 @@ events
       @act27 Line_to_Secondary_Station_Feux := {Namur→Bruxelles↦Ott_Nam, Namur↦Liege↦Huy_Nam, Bruxelles↦Namur↦Ott_Bxl, Bruxelles↦Liege↦Lvn_Bxl, Liege↦Bruxelles↦Lge_Lvn, Liege↦Namur↦Huy_Lge}
       @act28 Appli_Voyageur := {Namur→FALSE,Liege↦FALSE,Bruxelles↦FALSE,Huy↦FALSE,Leuven↦FALSE,Ottignies↦FALSE}
   end
-  
-  event Apparition_train
-    any SelectGare // Sélectionne une gare pour faire apparaître un train
-
-    where
-      @grd1 SelectGare ∈ dom(Gares)
-      @grd2 nb_train(SelectGare) < 2
-      @grd3 nb_train_total < 4
-      @grd4 Freinage_Line(SelectGare) = FALSE
-      @grd5 State_system = FALSE
-      @grd6 State_brake = FALSE
-	  @grd7 SelectGare ∈ dom(GarePrincipale)
-      @grd8 Quai(SelectGare↦Quai1) = FALSE
-    then
-      @act1 nb_train(SelectGare) ≔ nb_train(SelectGare) + 1
-      @act2 nb_train_total ≔ nb_train_total + 1
-	  @act3 Quai(SelectGare↦Quai1) ≔ TRUE
-  end		  
-  
-  
+		  
