@@ -1,0 +1,111 @@
+<context name="Context">
+  <sets>
+    <set name="Gare">
+      <enum>Namur</enum>
+      <enum>Liege</enum>
+      <enum>Bruxelles</enum>
+      <enum>Leuven</enum>
+      <enum>Ottignies</enum>
+      <enum>Huy</enum>
+    </set>
+    <set name="Quais">
+      <enum>Quai1</enum>
+      <enum>Quai2</enum>
+    </set>
+    <set name="Traffic_Light">
+      <enum>Lvn_Lge</enum>
+      <enum>Lge_Lvn</enum>
+      <enum>Lvn_Bxl</enum>
+      <enum>Bxl_Lvn</enum>
+      <enum>Bxl_Ott</enum>
+      <enum>Ott_Bxl</enum>
+      <enum>Ott_Nam</enum>
+      <enum>Nam_Ott</enum>
+      <enum>Huy_Nam</enum>
+      <enum>Nam_Huy</enum>
+      <enum>Lge_Huy</enum>
+      <enum>Huy_Lge</enum>
+    </set>
+  </sets>
+  <constants>
+    <constant name="Namur"/>
+    <constant name="Liege"/>
+    <constant name="Bruxelles"/>
+    <constant name="Leuven"/>
+    <constant name="Ottignies"/>
+    <constant name="Huy"/>
+    <constant name="Quai1"/>
+    <constant name="Quai2"/>
+    <constant name="Lvn_Lge"/>
+    <constant name="Lge_Lvn"/>
+    <constant name="Lvn_Bxl"/>
+    <constant name="Bxl_Lvn"/>
+    <constant name="Bxl_Ott"/>
+    <constant name="Ott_Bxl"/>
+    <constant name="Ott_Nam"/>
+    <constant name="Nam_Ott"/>
+    <constant name="Huy_Nam"/>
+    <constant name="Nam_Huy"/>
+    <constant name="Lge_Huy"/>
+    <constant name="Huy_Lge"/>
+  </constants>
+  <axioms>
+    <axiom>
+      <formula>
+        <partition>
+          <set>Gare</set>
+          <partition>
+            <enum>Namur</enum>
+          </partition>
+          <partition>
+            <enum>Bruxelles</enum>
+          </partition>
+          <partition>
+            <enum>Liege</enum>
+          </partition>
+          <partition>
+            <enum>Huy</enum>
+          </partition>
+          <partition>
+            <enum>Ottignies</enum>
+          </partition>
+          <partition>
+            <enum>Leuven</enum>
+          </partition>
+        </partition>
+      </formula>
+    </axiom>
+    <axiom>
+      <formula>
+        <partition>
+          <set>Quais</set>
+          <partition>
+            <enum>Quai1</enum>
+          </partition>
+          <partition>
+            <enum>Quai2</enum>
+          </partition>
+        </partition>
+      </formula>
+    </axiom>
+    <axiom>
+      <formula>
+        <partition>
+          <set>Traffic_Light</set>
+          <partition>
+            <enum>Lvn_Lge</enum>
+          </partition>
+          <partition>
+            <enum>Lge_Lvn</enum>
+          </partition>
+          <partition>
+            <enum>Lvn_Bxl</enum>
+          </partition>
+          <partition>
+            <enum>Bxl_Lvn</enum>
+          </partition>
+		</partition>
+	  </formula>
+	</axiom>
+  </axioms>
+</context>
