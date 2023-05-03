@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<machine name="Initial_machine">
+  <seesContext name="Context" />
+  <variables>
+    <variable name="Gares" comment="Représente les gares" type="map" domain="string" codomain="integer" />
+    <variable name="Gares_urgence" comment="Représente les gares où le dédoublement de voie est possible. Pour éviter deux trains de se rentrer dedans" type="map" domain="string" codomain="boolean" />
+    <variable name="nb_train" comment="Représente le nombre de train dans une gare" type="map" domain="string" codomain="integer" />
+    <variable name="Line" comment="Représente les premières lignes de convois. Donc, le sens d'un train vers une gare" type="map" domain="string" codomain="integer" />
+  </variables>
+  <invariants>
+    <invariant name="@inv1" formula="Gares ∈ { Bruxelles, Namur, Liege}→ℕ" />
+    <invariant name="@inv2" formula="nb_train ∈ { Bruxelles, Namur, Liege, Huy, Ottignies, Leuven}→ℕ" />
+    <invariant name="@inv3" formula="Line ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → ℕ" />
+  </invariants>
+  <events>
+    <event name="INITIALISATION">
+      <then>
+        <assignment name="@act1" variable="Gares" expression="{ Namur=&gt;1, Bruxelles=&gt;2, Liege=&gt;3}" />
+        <assignment name="@act2" variable="nb_train" expression="{ Namur=&gt;0, Bruxelles=&gt;0, Liege=&gt;0, Huy=&gt;0, Ottignies=&gt;0, Leuven=&gt;0}" />
+      </then>
+    </event>
+    <event name="Apparition_train">
+      <any name="SelectGare" comment="Sélectionne une gare pour faire apparaître un train">
+        <where>
+          <predicate name="@grd1" formula="SelectGare ∈ dom(Gares)" />
+          <predicate name="@grd2" formula="nb_train(SelectGare) &lt; 2" />
+        </where>
+        <then>
+          <assignment name="@act1" variable="nb_train(SelectGare)" expression="nb_train(SelectGare) + 1" />
+          <assignment name="@act2" variable="nb_train_total" expression="nb_train_total + 1" />
+        </then>
+      </any>
+    </event>
+    <event name="Station_To_Line">
+  <any name="SelectGP">
+    <parameterType>Machine</parameterType>
+  </any>
+  <any name="SelectTrajet">
+    <parameterType>Machine</parameterType>
+  </any>
+  <any name="SelectTrain">
+    <parameterType>Machine</parameterType>
+  </any>
+  <where>
+    <predicate name="grd1">
+      <in>
+        <parameter name="SelectGP"/>
+        <domain>
+          <identifier>Gares</identifier>
+        </domain>
+      </in>
+      <greaterEqualThan>
+        <parameter name="nb_train(SelectGP)"/>
+        <constant>1</constant>
+      </greaterEqualThan>
+    </predicate>
+    <predicate name="grd2">
+      <in>
+        <parameter name="SelectTrajet"/>
+        <domain>
+          <identifier>Gares</identifier>
+        </domain>
+      </in>
+    </predicate>
+    <predicate name="grd3">
+      <and>
+        <in>
+          <parameter name="SelectTrain"/>
+          <domain>
+            <identifier>Line</identifier>
+          </domain>
+        </in>
+        <equal>
+          <parameter name="SelectTrain"/>
+          <maplet>
+            <parameter name="SelectGP"/>
+            <parameter name="SelectTrajet"/>
+          </maplet>
+        </equal>
+        <lessThan>
+          <parameter name="Line(SelectTrain)"/>
+          <constant>1</constant>
+        </lessThan>
+      </and>
+    </predicate>
+  </where>
+  <then>
+    <assign name="act1">
+      <minus>
+        <parameter name="nb_train(SelectGP)"/>
+        <constant>1</constant>
+      </minus>
+      <to>
+        <parameter name="nb_train(SelectGP)"/>
+      </to>
+    </assign>
+    <assign name="act2">
+      <plus>
+        <parameter name="Line(SelectTrain)"/>
+        <constant>1</constant>
+      </plus>
+      <to>
+        <parameter name="Line(SelectTrain)"/>
+      </to>
+    </assign>
+    <assign name="act3">
+      <to>
+        <attributeAccess>
+          <parameter name="In_First_Line"/>
+          <identifier>SelectTrain</identifier>
+        </attributeAccess>
+      </to>
+      <constant>TRUE</constant>
+    </assign>
+  </then>
+</event>
+
+</specification>

@@ -1,0 +1,91 @@
+machine Initial_machine sees Context 
+
+variables Gares // Représente les gares
+          Gares_urgence // Représente les gares où le dédoublement de voie est possible. Pour éviter deux trains de se rentrer dedans
+          nb_train // Représente le nombre de train dans une gare
+          Line // Représente les premières lignes de convois. Donc, le sens d'un train vers une gare
+          Line_urgence // Représente les lignes associés aux gares d'urgences.
+          Aiguillages // Représente la postion des aiguillages pour effectuer un dédoublement de la voie
+          nb_train_urgence // Représente le nombre de train dans une gare d'urgence
+          Second_Line // Représente les secondes lignes de convois. Donc le sens opposé d'un train vers une gare
+          In_First_Line // Représente les bornes de contact présente sur les premières lignes de convois
+          In_Second_Line // Représente les bornes de contact présente sur les secondes lignes de convois
+          Line_Gare // Représente les lignes de convois auquel sont associés les gares de destinations.
+          nb_train_total // Représente le nombre de train total dans le système
+          Freinage_Line // Représente les lignes où est un freinage est effectué
+          temp // Variable temporaire permettant de décrementer de 1 les trains sur la première ligne de convois (nécessaire pour la marche arrière)
+          temp2 // Variable temporaire permettant de décrementer de 1 les trains sur la seconde ligne de convois (nécessaire pour la marche arrière)
+          temp3 // Variable temporaire permettant de vérifier la présence d'un train sur la première ligne de convois (nécessaire pour la marche arrière)
+          temp4 // Variable temporaire permettant de vérifier la présence d'un train sur la seconde ligne de convois (nécessaire pour la marche arrière)
+          State_system // Vérie l'état du système. Bloque les autres événements si deux trains vont entrer en collision
+          State_brake // Vérifie l'état du freinage. Marche arrière possible uniquement si deux trains sont considérés à l'arrêt
+          GarePrincipale // Représente les gares principales
+          GareSecondaire // Représente les gares secondaires
+          Quai // Représente les quais dans les gares
+          Feux Station_to_Line_Feux Line_to_Secondary_Station_Feux Line_to_Station_Feux Secondary_Station_to_Line_Feux
+          Appli_Voyageur // Représente l'application dans le lequel un message est reçu (BOOL)
+
+
+invariants
+  @inv1 Gares ∈ { Bruxelles, Namur, Liege}→ℕ
+  @inv2 nb_train ∈ { Bruxelles, Namur, Liege, Huy, Ottignies, Leuven}→ℕ
+  @inv3 Line ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → ℕ
+  @inv4 Aiguillages ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles}→BOOL
+  @inv5 Gares_urgence ∈ {Huy,Ottignies,Leuven}→ℕ
+  @inv6 nb_train_urgence ∈ {Huy,Ottignies,Leuven} → ℕ
+  @inv7 Line_urgence ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles}→dom(Gares_urgence)
+  @inv8 Second_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → ℕ
+  @inv9 In_Second_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
+  @inv10 Line_Gare ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → dom(Gares)
+  @inv11 nb_train_total ∈ ℕ
+  @inv12 Freinage_Line ∈ {Bruxelles, Namur, Liege} → BOOL
+  @inv13 temp ∈ ℕ
+  @inv14 temp2 ∈ ℕ
+  @inv15 State_system ∈ BOOL
+  @inv16 State_brake ∈ BOOL
+  @inv17 In_First_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
+  @inv18 temp3 ∈ BOOL
+  @inv19 temp4 ∈ BOOL
+  @inv20 GarePrincipale ∈ { Bruxelles, Namur, Liege}→ℕ
+  @inv21 GareSecondaire ∈ { Huy, Ottignies, Leuven}→ℕ
+  @inv22 Quai ∈ {Namur↦Quai1, Namur↦Quai2, Bruxelles↦Quai1, Bruxelles↦Quai2, Liege↦Quai1, Liege↦Quai2,Huy↦Quai1,Ottignies↦Quai1,Leuven↦Quai1}→BOOL
+  @inv23 Feux ∈ {Lvn_Lge, Lge_Lvn, Lvn_Bxl, Bxl_Lvn, Bxl_Ott, Ott_Bxl, Ott_Nam, Nam_Ott, Huy_Nam, Nam_Huy, Lge_Huy, Huy_Lge} → BOOL
+  theorem @inv24 Station_to_Line_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv25 Secondary_Station_to_Line_Feux ∈ { Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Liege↦Bruxelles, Bruxelles↦Liege} → dom(Feux)
+  @inv26 Line_to_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv27 Line_to_Secondary_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv28 Appli_Voyageur ∈ {Namur,Liege,Bruxelles,Huy,Leuven,Ottignies} → BOOL
+
+events
+  event INITIALISATION
+    then
+      @act1 Gares := { Namur→1, Bruxelles↦2, Liege↦3}
+      @act2 nb_train := { Namur→0, Bruxelles↦0, Liege↦0, Huy↦0, Ottignies↦0, Leuven↦0}
+      @act3 Line := {Namur→Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act4 nb_train_urgence := {Huy→0,Ottignies↦0,Leuven↦0}
+      @act5 Gares_urgence := {Huy→1,Ottignies↦2,Leuven↦3}
+      @act6 Line_urgence := {Namur→Bruxelles↦Ottignies,Bruxelles↦Namur↦Ottignies, Namur↦Liege↦Huy, Liege↦Namur↦Huy, Bruxelles↦Liege↦Leuven, Liege↦Bruxelles↦Leuven}
+      @act7 Aiguillages := {Namur→Bruxelles↦FALSE,Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act8 Second_Line := {Namur→Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act9 In_Second_Line := {Namur→Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act10 Line_Gare := {Namur→Bruxelles↦Bruxelles, Bruxelles↦Namur↦Namur, Namur↦Liege↦Liege, Liege↦Namur↦Namur, Bruxelles↦Liege↦Liege, Liege↦Bruxelles↦Bruxelles}
+      @act11 nb_train_total := 0
+      @act12 Freinage_Line := {Bruxelles→FALSE, Namur↦FALSE, Liege↦FALSE}
+      @act13 temp := 0
+      @act14 temp2 := 0
+      @act15 State_system := FALSE
+      @act16 State_brake := FALSE
+      @act17 In_First_Line := {Namur→Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act18 temp3 := FALSE
+      @act19 temp4 := FALSE
+      @act20 GarePrincipale := { Bruxelles→0, Namur↦0, Liege↦0}
+      @act21 GareSecondaire := {Huy→0, Ottignies↦0, Leuven↦0}
+      @act22 Quai := {Namur→Quai1↦FALSE, Namur↦Quai2↦FALSE, Bruxelles↦Quai1↦FALSE, Bruxelles↦Quai2↦FALSE, Liege↦Quai1↦FALSE, Liege↦Quai2↦FALSE,Huy↦Quai1↦FALSE,Ottignies↦Quai1↦FALSE,Leuven↦Quai1↦FALSE}
+      @act23 Feux := {Lvn_Lge→TRUE, Lge_Lvn↦TRUE, Lvn_Bxl↦TRUE, Bxl_Lvn↦TRUE, Bxl_Ott↦TRUE, Ott_Bxl↦TRUE, Ott_Nam↦TRUE, Nam_Ott↦TRUE, Huy_Nam↦TRUE, Nam_Huy↦TRUE, Lge_Huy↦TRUE, Huy_Lge↦TRUE}
+      @act24 Station_to_Line_Feux := {Namur→Bruxelles↦Nam_Ott, Namur↦Liege↦Nam_Huy, Bruxelles↦Namur↦Bxl_Ott, Bruxelles↦Liege↦Bxl_Lvn, Liege↦Bruxelles↦Lge_Lvn, Liege↦Namur↦Lge_Huy}
+      @act25 Secondary_Station_to_Line_Feux := {Namur→Bruxelles↦Ott_Bxl,Bruxelles↦Namur↦Ott_Nam, Namur↦Liege↦Huy_Lge, Liege↦Namur↦Lge_Huy, Liege↦Bruxelles↦Lvn_Bxl, Bruxelles↦Liege↦Lge_Lvn}
+      @act26 Line_to_Station_Feux := {Namur→Bruxelles↦Bxl_Ott, Namur↦Liege↦Lge_Huy, Bruxelles↦Namur↦Nam_Ott, Bruxelles↦Liege↦Lge_Lvn, Liege↦Bruxelles↦Bxl_Lvn, Liege↦Namur↦Nam_Huy}
+      @act27 Line_to_Secondary_Station_Feux := {Namur→Bruxelles↦Ott_Nam, Namur↦Liege↦Huy_Nam, Bruxelles↦Namur↦Ott_Bxl, Bruxelles↦Liege↦Lvn_Bxl, Liege↦Bruxelles↦Lge_Lvn, Liege↦Namur↦Huy_Lge}
+      @act28 Appli_Voyageur := {Namur→FALSE,Liege↦FALSE,Bruxelles↦FALSE,Huy↦FALSE,Leuven↦FALSE,Ottignies↦FALSE}
+  end
+		  

@@ -1,0 +1,235 @@
+machine Initial_machine sees Context 
+
+variables Gares // Représente les gares
+          Gares_urgence // Représente les gares où le dédoublement de voie est possible. Pour éviter deux trains de se rentrer dedans
+          nb_train // Représente le nombre de train dans une gare
+          Line // Représente les premières lignes de convois. Donc, le sens d'un train vers une gare
+          Line_urgence // Représente les lignes associés aux gares d'urgences.
+          Aiguillages // Représente la postion des aiguillages pour effectuer un dédoublement de la voie
+          nb_train_urgence // Représente le nombre de train dans une gare d'urgence
+          Second_Line // Représente les secondes lignes de convois. Donc le sens opposé d'un train vers une gare
+          In_First_Line // Représente les bornes de contact présente sur les premières lignes de convois
+          In_Second_Line // Représente les bornes de contact présente sur les secondes lignes de convois
+          Line_Gare // Représente les lignes de convois auquel sont associés les gares de destinations.
+          nb_train_total // Représente le nombre de train total dans le système
+          Freinage_Line // Représente les lignes où est un freinage est effectué
+          temp // Variable temporaire permettant de décrementer de 1 les trains sur la première ligne de convois (nécessaire pour la marche arrière)
+          temp2 // Variable temporaire permettant de décrementer de 1 les trains sur la seconde ligne de convois (nécessaire pour la marche arrière)
+          temp3 // Variable temporaire permettant de vérifier la présence d'un train sur la première ligne de convois (nécessaire pour la marche arrière)
+          temp4 // Variable temporaire permettant de vérifier la présence d'un train sur la seconde ligne de convois (nécessaire pour la marche arrière)
+          State_system // Vérie l'état du système. Bloque les autres événements si deux trains vont entrer en collision
+          State_brake // Vérifie l'état du freinage. Marche arrière possible uniquement si deux trains sont considérés à l'arrêt
+
+
+invariants
+  @inv1 Gares ∈ { Bruxelles, Namur, Liege}→ℕ
+  @inv2 nb_train ∈ { Bruxelles, Namur, Liege, Huy, Ottignies, Leuven}→ℕ
+  @inv3 Line ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → ℕ
+  @inv4 Aiguillages ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles}→BOOL
+  @inv5 Gares_urgence ∈ {Huy,Ottignies,Leuven}→ℕ
+  @inv6 nb_train_urgence ∈ {Huy,Ottignies,Leuven} → ℕ
+  @inv7 Line_urgence ∈ {Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles}→dom(Gares_urgence)
+  @inv8 Second_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → ℕ
+  @inv9 In_Second_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
+  @inv10 Line_Gare ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → dom(Gares)
+  @inv11 nb_train_total ∈ ℕ
+  @inv12 Freinage_Line ∈ {Bruxelles, Namur, Liege} → BOOL
+  @inv13 temp ∈ ℕ
+  @inv14 temp2 ∈ ℕ
+  @inv15 State_system ∈ BOOL
+  @inv16 State_brake ∈ BOOL
+  @inv17 In_First_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
+  @inv18 temp3 ∈ BOOL
+  @inv19 temp4 ∈ BOOL
+
+events
+  event INITIALISATION
+    then
+      @act1 Gares ≔ { Namur↦1, Bruxelles↦2, Liege↦3}
+      @act2 nb_train ≔ { Namur↦0, Bruxelles↦0, Liege↦0, Huy↦0, Ottignies↦0, Leuven↦0}
+      @act3 Line ≔ {Namur↦Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act4 nb_train_urgence ≔ {Huy↦0,Ottignies↦0,Leuven↦0}
+      @act5 Gares_urgence ≔ {Huy↦1,Ottignies↦2,Leuven↦3}
+      @act6 Line_urgence ≔ {Namur↦Bruxelles↦Ottignies,Bruxelles↦Namur↦Ottignies, Namur↦Liege↦Huy, Liege↦Namur↦Huy, Bruxelles↦Liege↦Leuven, Liege↦Bruxelles↦Leuven}
+      @act7 Aiguillages ≔ {Namur↦Bruxelles↦FALSE,Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act8 Second_Line ≔ {Namur↦Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act9 In_Second_Line ≔ {Namur↦Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act10 Line_Gare ≔ {Namur↦Bruxelles↦Bruxelles, Bruxelles↦Namur↦Namur, Namur↦Liege↦Liege, Liege↦Namur↦Namur, Bruxelles↦Liege↦Liege, Liege↦Bruxelles↦Bruxelles}
+      @act11 nb_train_total ≔ 0
+      @act12 Freinage_Line ≔ {Bruxelles↦FALSE, Namur↦FALSE, Liege↦FALSE}
+      @act13 temp ≔ 0
+      @act14 temp2 ≔ 0
+      @act15 State_system ≔ FALSE
+      @act16 State_brake ≔ FALSE
+      @act17 In_First_Line ≔ {Namur↦Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act18 temp3 ≔ FALSE
+      @act19 temp4 ≔ FALSE
+  end
+
+  event Apparition_train
+    any SelectGare // Sélectionne une gare pour faire apparaître un train
+
+    where
+      @grd1 SelectGare ∈ dom(Gares)
+      @grd2 nb_train(SelectGare) < 2
+      @grd3 nb_train_total < 4
+      @grd4 Freinage_Line(SelectGare) = FALSE
+      @grd5 State_system = FALSE
+      @grd6 State_brake = FALSE
+    then
+      @act1 nb_train(SelectGare) ≔ nb_train(SelectGare) + 1
+      @act2 nb_train_total ≔ nb_train_total + 1
+  end
+
+  event Station_To_Line
+    any SelectGP // Sélectionne une gare de départ
+        SelectTrajet // Sélectionne une gare de destination
+        SelectTrain // Fais la liaison entre les lignes de convois grâce aux gares d'arrivées et de destinations sélectionné. Ainsi est créé, le nom du train
+
+    where
+      @grd1 SelectGP ∈ dom(Gares) ∧ nb_train(SelectGP) ≥ 1
+      @grd2 SelectTrajet ∈ dom(Gares)
+      @grd3 SelectTrain ∈ dom(Line) ∧ SelectTrain = SelectGP↦SelectTrajet
+      @grd4 Line(SelectTrain) < 1
+      @grd5 State_system = FALSE
+      @grd6 State_brake = FALSE
+    then
+      @act1 nb_train(SelectGP) ≔ nb_train(SelectGP) − 1
+      @act2 Line(SelectTrain) ≔ Line(SelectTrain) + 1
+      @act3 In_First_Line(SelectTrain) ≔ TRUE
+  end
+
+  event Line_To_Emergency_Station
+    any SelectTrain // Sélectionne le nom du train (le nom est répresenté par la ligne de trajet du train)
+        SelectGareUrgence // Séléctionne la gare d'urgence pour éviter une collision
+
+    where
+      @grd1 SelectTrain ∈ dom(Line)
+      @grd2 Line(SelectTrain)  ≥ 1
+      @grd3 SelectGareUrgence ∈ dom(Gares_urgence) ∧ nb_train_urgence(SelectGareUrgence) < 1
+      @grd4 Line_urgence(SelectTrain) = SelectGareUrgence
+      @grd5 Aiguillages(SelectTrain) = TRUE
+      @grd6 State_system = FALSE
+      @grd7 State_brake = FALSE
+    then
+      @act1 nb_train_urgence(SelectGareUrgence) ≔ nb_train_urgence(SelectGareUrgence) + 1
+      @act2 Line(SelectTrain) ≔ Line(SelectTrain) − 1
+      @act3 In_First_Line(SelectTrain) ≔ FALSE
+  end
+
+  event Emergency_To_Second_Line
+    any SelectGare // Sélectionne la gare d'urgence de départ
+        SelectTrain // Sélectionne le nom du train présent dans la gare de départ (le nom est répresenté par la ligne de trajet du train)
+
+    where
+      @grd1 SelectGare ∈ dom(Gares_urgence)
+      @grd2 SelectTrain ∈ dom(Line)
+      @grd3 Line_urgence(SelectTrain) = SelectGare
+      @grd4 nb_train_urgence(SelectGare) ≥ 1
+      @grd5 Second_Line(SelectTrain) < 1
+      @grd6 Aiguillages(SelectTrain) = TRUE
+      @grd7 State_system = FALSE
+      @grd8 State_brake = FALSE
+    then
+      @act1 nb_train_urgence(SelectGare) ≔ nb_train_urgence(SelectGare) − 1
+      @act2 Second_Line(SelectTrain) ≔ Second_Line(SelectTrain) + 1
+      @act3 In_Second_Line(SelectTrain) ≔ TRUE
+  end
+
+  event Line_To_Second_Line
+    any SelectGareLine // Sélectionne la gare d'ou provient le train
+        SelectSecondGareLine // Sélectionne la gare où il se rendra
+
+    where
+      @grd1 SelectGareLine ∈ dom(dom(Line)) ∧ SelectSecondGareLine ∈ ran(dom(Line))
+      @grd2 SelectGareLine ≠ SelectSecondGareLine
+      @grd3 Line(SelectGareLine↦SelectSecondGareLine) = 1 ∧ Second_Line(SelectGareLine↦SelectSecondGareLine)<1
+      @grd4 Aiguillages(SelectGareLine↦SelectSecondGareLine) = FALSE
+      @grd5 State_system = FALSE
+      @grd6 State_brake = FALSE
+      @grd7 (Line(SelectGareLine↦SelectSecondGareLine) ≠ 1 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)≠1) ∨ (Line(SelectGareLine↦SelectSecondGareLine) ≠ 1 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)≠0) ∨ (Line(SelectGareLine↦SelectSecondGareLine) ≠ 0 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)≠1)
+    then
+      @act1 In_Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ TRUE
+      @act2 Line(SelectGareLine↦SelectSecondGareLine) ≔ Line(SelectGareLine↦SelectSecondGareLine) − 1
+      @act3 Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ Second_Line(SelectGareLine↦SelectSecondGareLine) + 1
+      @act4 State_system :∣ (State_system' ∈ BOOL) ∧ ((Line(SelectGareLine↦SelectSecondGareLine) = 1 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)=1 ⇒ State_system' = TRUE) ∧ (Line(SelectGareLine↦SelectSecondGareLine) ≠ 1 ∨ Second_Line(SelectSecondGareLine↦SelectGareLine)≠1 ⇒ State_system' = FALSE))
+      @act5 In_First_Line(SelectGareLine↦SelectSecondGareLine) ≔ FALSE
+  end
+
+  event Second_Line_To_Station
+    any SelectGareLine // Sélectionne la gare d'où provient le train
+        SelectSecondGareLine // Sélectionne la gare d'arrivée où le train est censé aller
+        SelectGare // Sélectionne la gare d'arrivée (Peut-être redondant mais nécessaire pour les gardes de l'événement)
+
+    where
+      @grd1 SelectGareLine ∈ dom(dom(Second_Line)) ∧ SelectSecondGareLine ∈ ran(dom(Second_Line))
+      @grd2 SelectGareLine ≠ SelectSecondGareLine
+      @grd3 SelectGare ∈ ran(dom(Second_Line))
+      @grd4 Line_Gare(SelectGareLine↦SelectSecondGareLine) = SelectGare
+      @grd5 Second_Line(SelectGareLine↦SelectSecondGareLine) ≥ 1 ∧ nb_train(SelectGare) < 1
+      @grd6 In_Second_Line(SelectGareLine↦SelectSecondGareLine) = TRUE ∧ In_First_Line(SelectSecondGareLine↦SelectGareLine) = FALSE
+      @grd8 State_system = FALSE
+      @grd9 State_brake = FALSE
+    then
+      @act1 Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ Second_Line(SelectGareLine↦SelectSecondGareLine) − 1
+      @act2 nb_train(SelectGare) ≔ nb_train(SelectGare)+1
+      @act3 In_Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ FALSE
+  end
+
+  event Choose_Aiguillage
+    any SelectLine // Sélectionne la ligne de convois où on souhaite changer l'aiguillage
+        SelectAction // Sélectionne la position de l'aiguillage. (TRUE or FALSE)
+
+    where
+      @grd1 SelectLine ∈ dom(Line)
+      @grd2 SelectAction ∈ BOOL ∧ SelectAction ≠ Aiguillages(SelectLine)
+    then
+      @act1 Aiguillages(SelectLine) ≔ SelectAction
+  end
+
+  event Freinage_Urgence
+    any SelectTrain // Sélectionne la première ligne de convois où se trouve un train
+        SelectSecondTrain // Sélectionne la seconde ligne de convois où se trouve le second train
+        SelectGare // Sélectionne les gares possibles pour enclencher une marche arrière
+
+    where
+      @grd1 SelectTrain ∈ dom(Line_Gare) ∧ SelectSecondTrain ∈ dom(Line_Gare)
+      @grd2 Line(SelectTrain) ≥ 1  ∧ Second_Line(SelectSecondTrain) ≥ 1
+      @grd3 SelectTrain ≠ SelectSecondTrain
+      @grd4 (Line(SelectSecondTrain) < 1 ∧ SelectGare = Line_Gare(SelectTrain)) ∨ ( SelectGare = Line_Gare(SelectSecondTrain) )
+      @grd5 nb_train(SelectGare) < 2
+      @grd6 State_brake = FALSE
+      @grd7 Line_urgence(SelectTrain) = Line_urgence(SelectSecondTrain)
+    then
+      @act1 temp :∣ (temp' ∈ ℕ ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp'= 0) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp'=1))
+      @act2 temp2 :∣ (temp2' ∈ ℕ ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp2'= 1) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp2'=0))
+      @act3 temp3 :∣ (temp3' ∈ BOOL ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp3'= TRUE) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp3'=FALSE))
+      @act4 temp4 :∣ (temp4' ∈ BOOL ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp4'= FALSE) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp4'=TRUE))
+      @act5 Freinage_Line(SelectGare) ≔ TRUE
+      @act6 State_system ≔ TRUE
+      @act7 State_brake ≔ TRUE
+  end
+
+  event Marche_Arriere_Station
+    any SelectTrain // Sélectionne la première ligne de convois où se trouve un train
+        SelectSecondTrain // Sélectionne la seconde ligne de convois où se trouve le second train
+        SelectGare // Sélectionne les gares possibles pour enclencher une marche arrière
+
+    where
+      @grd1 SelectTrain ∈ dom(Line_Gare) ∧ SelectSecondTrain ∈ dom(Line_Gare)
+      @grd2 Line(SelectTrain) ≥ 1  ∧ Second_Line(SelectSecondTrain) ≥ 1
+      @grd3 SelectTrain ≠ SelectSecondTrain
+      @grd4 SelectGare = Line_Gare(SelectTrain) ∨ SelectGare = Line_Gare(SelectSecondTrain)
+      @grd5 nb_train(SelectGare) < 2
+      @grd6 Freinage_Line(SelectGare) = TRUE
+    then
+      @act1 Line(SelectTrain) ≔ Line(SelectTrain) − temp
+      @act2 Second_Line(SelectSecondTrain) ≔ Second_Line(SelectSecondTrain) − temp2
+      @act3 nb_train(SelectGare) ≔ nb_train(SelectGare) + 1
+      @act4 Freinage_Line(SelectGare) ≔ FALSE
+      @act5 State_system ≔ FALSE
+      @act6 State_brake ≔ FALSE
+      @act7 In_First_Line(SelectTrain) ≔ temp3
+      @act8 In_Second_Line(SelectSecondTrain) ≔ temp4
+  end
+end
