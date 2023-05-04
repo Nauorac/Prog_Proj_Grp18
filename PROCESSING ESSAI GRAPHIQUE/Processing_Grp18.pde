@@ -21,6 +21,7 @@ PImage imgTrain_droite;
 PImage imgTrain_droite_pt;
 PImage imgTrain_gauche;
 PImage imgTrain_gauche_pt;
+PImage imgRond_hd;
 
 void setup() {
      size(1450, 675); // Définir la taille de la fenêtre (largeur, hauteur)
@@ -32,6 +33,7 @@ void setup() {
     imgRond_bg = loadImage("pictures/rond_bg.png");
     imgRond_brut = loadImage("pictures/rond_brut.png");
     imgRond_hg = loadImage("pictures/rond_hg.png");
+    imgRond_hd = loadImage("pictures/rond_hd.png");
     imgSwitch = loadImage("pictures/switch.png");
     imgSwitch_ = loadImage("pictures/Switch_.png");
     imgSwitch_droite = loadImage("pictures/Switch_droite.png");
@@ -88,11 +90,51 @@ void draw() {
   fill(255, 0, 0); 
   rect(1200, 10, 150, 150);
   
+   //Gare de Namur
+  fill(255, 0, 0); 
+  rect(645 ,290, 150, 150);
+
+   
+
+  // Déssiner les lignes/voies sans dédoublement
+  image(imgRail_gauche_droite, 10, 39);
+  image(imgRail_gauche_droite, 10, 85);
+  image(imgRail_gauche_droite, 160, 85);
+  image(imgRail_gauche_droite, 310, 85);
+  image(imgRail_gauche_droite, 460, 85);
+  image(imgRail_gauche_droite, 760, 85);
+  image(imgRail_gauche_droite, 910, 85);
+  image(imgRail_gauche_droite, 1105, 85);
+  image(imgRail_gauche_droite, 1195, 85);
+  image(imgRail_gauche_droite, 1195, 39);
+  image(imgSwitch_gauche_1, 90, 35);
+  image(imgSwitch_gauche, 215, 85);
+  image(imgRond_hd, 341, 135);
+  image(imgRond_bg, 420, 265);
+  image(imgRail_gauche_droite, 545, 347);
+  image(imgRail_gauche_droite, 650, 347);
+  image(imgRail_gauche_droite, 770, 347);
+  image(imgRond_bd, 920,262);
+  image(imgSwitch_droite_2, 1200, 35);
+  image(imgSwitch_droite, 1100,85);
+  image(imgRail_gauche_droite, 955, 85);
+  image(imgRond_hg, 995, 135);
+  
+  //Gares secondaires
+    //Gare HUY
+  fill(0, 0, 255); 
+  rect(940, 235, 150, 46);
+  
+  //Gare Ottignies
+  fill(0, 0, 255); 
+  rect(375, 235, 150, 46);
+  
   //Gare de Leuven
   fill(0, 0, 255); 
-  rect(505, 85, 150, 46);
+  rect(610, 85, 150, 46);
   
-  //Nom des quais
+  
+    //Nom des quais
   fill(0);
   textAlign(CENTER, CENTER);
   textFont(createFont("Arial", 16), 16);
@@ -107,20 +149,8 @@ void draw() {
   textFont(createFont("Arial", 16), 16);
   text("Gare Principale Bruxelles", 95 ,175);
   text("Gare Principale Liège", 1270 ,175);
-   
-
-  // Déssiner les rails horizontales 
-  image(imgRail_gauche_droite, 55, 39);
-  image(imgRail_gauche_droite, 55, 85);
-  image(imgRail_gauche_droite, 205, 85);
-  image(imgRail_gauche_droite, 355, 85);
-  image(imgRail_gauche_droite, 655, 85);
-  image(imgRail_gauche_droite, 805, 85);
-  image(imgRail_gauche_droite, 955, 85);
-  image(imgRail_gauche_droite, 1105, 85);
-  image(imgRail_gauche_droite, 1180, 85);
-  image(imgRail_gauche_droite, 1180, 39);
-  image(imgSwitch_gauche_1, 205, 35);
-  image(imgSwitch_gauche, 330, 85);
+  
+  
+  
   
 }
