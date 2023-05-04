@@ -19,7 +19,11 @@ variables Gares // Représente les gares
           temp4 // Variable temporaire permettant de vérifier la présence d'un train sur la seconde ligne de convois (nécessaire pour la marche arrière)
           State_system // Vérie l'état du système. Bloque les autres événements si deux trains vont entrer en collision
           State_brake // Vérifie l'état du freinage. Marche arrière possible uniquement si deux trains sont considérés à l'arrêt
-
+          GarePrincipale // Représente les gares principales
+          GareSecondaire // Représente les gares secondaires
+          Quai // Représente les quais dans les gares
+          Feux Station_to_Line_Feux Line_to_Secondary_Station_Feux Line_to_Station_Feux Secondary_Station_to_Line_Feux
+          Appli_Voyageur // Représente l'application dans le lequel un message est reçu (BOOL)
 
 invariants
   @inv1 Gares ∈ { Bruxelles, Namur, Liege}→ℕ
@@ -41,34 +45,51 @@ invariants
   @inv17 In_First_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
   @inv18 temp3 ∈ BOOL
   @inv19 temp4 ∈ BOOL
+  @inv20 GarePrincipale ∈ { Bruxelles, Namur, Liege}→ℕ
+  @inv21 GareSecondaire ∈ { Huy, Ottignies, Leuven}→ℕ
+  @inv22 Quai ∈ {Namur↦Quai1, Namur↦Quai2, Bruxelles↦Quai1, Bruxelles↦Quai2, Liege↦Quai1, Liege↦Quai2,Huy↦Quai1,Ottignies↦Quai1,Leuven↦Quai1}→BOOL
+  @inv23 Feux ∈ {Lvn_Lge, Lge_Lvn, Lvn_Bxl, Bxl_Lvn, Bxl_Ott, Ott_Bxl, Ott_Nam, Nam_Ott, Huy_Nam, Nam_Huy, Lge_Huy, Huy_Lge} → BOOL
+  theorem @inv24 Station_to_Line_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv25 Secondary_Station_to_Line_Feux ∈ { Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Liege↦Bruxelles, Bruxelles↦Liege} → dom(Feux)
+  @inv26 Line_to_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv27 Line_to_Secondary_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+  @inv28 Appli_Voyageur ∈ {Namur,Liege,Bruxelles,Huy,Leuven,Ottignies} → BOOL
 
 events
   event INITIALISATION
     then
-      @act1 Gares ≔ { Namur↦1, Bruxelles↦2, Liege↦3}
-      @act2 nb_train ≔ { Namur↦0, Bruxelles↦0, Liege↦0, Huy↦0, Ottignies↦0, Leuven↦0}
-      @act3 Line ≔ {Namur↦Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
-      @act4 nb_train_urgence ≔ {Huy↦0,Ottignies↦0,Leuven↦0}
-      @act5 Gares_urgence ≔ {Huy↦1,Ottignies↦2,Leuven↦3}
-      @act6 Line_urgence ≔ {Namur↦Bruxelles↦Ottignies,Bruxelles↦Namur↦Ottignies, Namur↦Liege↦Huy, Liege↦Namur↦Huy, Bruxelles↦Liege↦Leuven, Liege↦Bruxelles↦Leuven}
-      @act7 Aiguillages ≔ {Namur↦Bruxelles↦FALSE,Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
-      @act8 Second_Line ≔ {Namur↦Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
-      @act9 In_Second_Line ≔ {Namur↦Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
-      @act10 Line_Gare ≔ {Namur↦Bruxelles↦Bruxelles, Bruxelles↦Namur↦Namur, Namur↦Liege↦Liege, Liege↦Namur↦Namur, Bruxelles↦Liege↦Liege, Liege↦Bruxelles↦Bruxelles}
-      @act11 nb_train_total ≔ 0
-      @act12 Freinage_Line ≔ {Bruxelles↦FALSE, Namur↦FALSE, Liege↦FALSE}
-      @act13 temp ≔ 0
-      @act14 temp2 ≔ 0
-      @act15 State_system ≔ FALSE
-      @act16 State_brake ≔ FALSE
-      @act17 In_First_Line ≔ {Namur↦Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
-      @act18 temp3 ≔ FALSE
-      @act19 temp4 ≔ FALSE
+      @act1 Gares := { Namur→1, Bruxelles↦2, Liege↦3}
+      @act2 nb_train := { Namur→0, Bruxelles↦0, Liege↦0, Huy↦0, Ottignies↦0, Leuven↦0}
+      @act3 Line := {Namur→Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act4 nb_train_urgence := {Huy→0,Ottignies↦0,Leuven↦0}
+      @act5 Gares_urgence := {Huy→1,Ottignies↦2,Leuven↦3}
+      @act6 Line_urgence := {Namur→Bruxelles↦Ottignies,Bruxelles↦Namur↦Ottignies, Namur↦Liege↦Huy, Liege↦Namur↦Huy, Bruxelles↦Liege↦Leuven, Liege↦Bruxelles↦Leuven}
+      @act7 Aiguillages := {Namur→Bruxelles↦FALSE,Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act8 Second_Line := {Namur→Bruxelles↦0,Bruxelles↦Namur↦0, Namur↦Liege↦0, Liege↦Namur↦0, Bruxelles↦Liege↦0, Liege↦Bruxelles↦0}
+      @act9 In_Second_Line := {Namur→Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act10 Line_Gare := {Namur→Bruxelles↦Bruxelles, Bruxelles↦Namur↦Namur, Namur↦Liege↦Liege, Liege↦Namur↦Namur, Bruxelles↦Liege↦Liege, Liege↦Bruxelles↦Bruxelles}
+      @act11 nb_train_total := 0
+      @act12 Freinage_Line := {Bruxelles→FALSE, Namur↦FALSE, Liege↦FALSE}
+      @act13 temp := 0
+      @act14 temp2 := 0
+      @act15 State_system := FALSE
+      @act16 State_brake := FALSE
+      @act17 In_First_Line := {Namur→Bruxelles↦FALSE, Bruxelles↦Namur↦FALSE, Namur↦Liege↦FALSE, Liege↦Namur↦FALSE, Bruxelles↦Liege↦FALSE, Liege↦Bruxelles↦FALSE}
+      @act18 temp3 := FALSE
+      @act19 temp4 := FALSE
+      @act20 GarePrincipale := { Bruxelles→0, Namur↦0, Liege↦0}
+      @act21 GareSecondaire := {Huy→0, Ottignies↦0, Leuven↦0}
+      @act22 Quai := {Namur→Quai1↦FALSE, Namur↦Quai2↦FALSE, Bruxelles↦Quai1↦FALSE, Bruxelles↦Quai2↦FALSE, Liege↦Quai1↦FALSE, Liege↦Quai2↦FALSE,Huy↦Quai1↦FALSE,Ottignies↦Quai1↦FALSE,Leuven↦Quai1↦FALSE}
+      @act23 Feux := {Lvn_Lge→TRUE, Lge_Lvn↦TRUE, Lvn_Bxl↦TRUE, Bxl_Lvn↦TRUE, Bxl_Ott↦TRUE, Ott_Bxl↦TRUE, Ott_Nam↦TRUE, Nam_Ott↦TRUE, Huy_Nam↦TRUE, Nam_Huy↦TRUE, Lge_Huy↦TRUE, Huy_Lge↦TRUE}
+      @act24 Station_to_Line_Feux := {Namur→Bruxelles↦Nam_Ott, Namur↦Liege↦Nam_Huy, Bruxelles↦Namur↦Bxl_Ott, Bruxelles↦Liege↦Bxl_Lvn, Liege↦Bruxelles↦Lge_Lvn, Liege↦Namur↦Lge_Huy}
+      @act25 Secondary_Station_to_Line_Feux := {Namur→Bruxelles↦Ott_Bxl,Bruxelles↦Namur↦Ott_Nam, Namur↦Liege↦Huy_Lge, Liege↦Namur↦Lge_Huy, Liege↦Bruxelles↦Lvn_Bxl, Bruxelles↦Liege↦Lge_Lvn}
+      @act26 Line_to_Station_Feux := {Namur→Bruxelles↦Bxl_Ott, Namur↦Liege↦Lge_Huy, Bruxelles↦Namur↦Nam_Ott, Bruxelles↦Liege↦Lge_Lvn, Liege↦Bruxelles↦Bxl_Lvn, Liege↦Namur↦Nam_Huy}
+      @act27 Line_to_Secondary_Station_Feux := {Namur→Bruxelles↦Ott_Nam, Namur↦Liege↦Huy_Nam, Bruxelles↦Namur↦Ott_Bxl, Bruxelles↦Liege↦Lvn_Bxl, Liege↦Bruxelles↦Lge_Lvn, Liege↦Namur↦Huy_Lge}
+      @act28 Appli_Voyageur := {Namur→FALSE,Liege↦FALSE,Bruxelles↦FALSE,Huy↦FALSE,Leuven↦FALSE,Ottignies↦FALSE}
   end
-
+  
   event Apparition_train
     any SelectGare // Sélectionne une gare pour faire apparaître un train
-
     where
       @grd1 SelectGare ∈ dom(Gares)
       @grd2 nb_train(SelectGare) < 2
@@ -76,16 +97,19 @@ events
       @grd4 Freinage_Line(SelectGare) = FALSE
       @grd5 State_system = FALSE
       @grd6 State_brake = FALSE
+  	  @grd7 SelectGare ∈ dom(GarePrincipale)
+      @grd8 Quai(SelectGare↦Quai1) = FALSE
     then
       @act1 nb_train(SelectGare) ≔ nb_train(SelectGare) + 1
       @act2 nb_train_total ≔ nb_train_total + 1
-  end
-
-  event Station_To_Line
+	    @act3 Quai(SelectGare↦Quai1) ≔ TRUE
+  end		  
+  
+  event MainStation_To_Line extends Station_To_Line 
     any SelectGP // Sélectionne une gare de départ
         SelectTrajet // Sélectionne une gare de destination
         SelectTrain // Fais la liaison entre les lignes de convois grâce aux gares d'arrivées et de destinations sélectionné. Ainsi est créé, le nom du train
-
+        SelectQuai 
     where
       @grd1 SelectGP ∈ dom(Gares) ∧ nb_train(SelectGP) ≥ 1
       @grd2 SelectTrajet ∈ dom(Gares)
@@ -93,13 +117,21 @@ events
       @grd4 Line(SelectTrain) < 1
       @grd5 State_system = FALSE
       @grd6 State_brake = FALSE
+      @grd7 Quai(SelectGP↦SelectQuai) = TRUE
+      @grd8 SelectGP ∈ dom(GarePrincipale)
+      @grd9 SelectQuai ∈ ran(dom(Quai))
+      @grd10 Feux(Station_to_Line_Feux(SelectGP↦SelectTrajet)) = TRUE
+
     then
       @act1 nb_train(SelectGP) ≔ nb_train(SelectGP) − 1
       @act2 Line(SelectTrain) ≔ Line(SelectTrain) + 1
       @act3 In_First_Line(SelectTrain) ≔ TRUE
+      @act4 Quai(SelectGP↦SelectQuai) ≔ FALSE
+      @act5 Feux(Station_to_Line_Feux(SelectGP↦SelectTrajet)) ≔ FALSE
+      @act6 Appli_Voyageur(SelectGP) ≔ FALSE
   end
 
-  event Line_To_Emergency_Station
+  event Line_To_Secondary_Station extends Line_To_Emergency_Station 
     any SelectTrain // Sélectionne le nom du train (le nom est répresenté par la ligne de trajet du train)
         SelectGareUrgence // Séléctionne la gare d'urgence pour éviter une collision
 
@@ -111,13 +143,19 @@ events
       @grd5 Aiguillages(SelectTrain) = TRUE
       @grd6 State_system = FALSE
       @grd7 State_brake = FALSE
+      @grd8 SelectGareUrgence ∈ dom(GareSecondaire)
+      @grd9 Quai(SelectGareUrgence↦Quai1) = FALSE
+      @grd10 Appli_Voyageur(SelectGareUrgence) = TRUE
+
     then
       @act1 nb_train_urgence(SelectGareUrgence) ≔ nb_train_urgence(SelectGareUrgence) + 1
       @act2 Line(SelectTrain) ≔ Line(SelectTrain) − 1
       @act3 In_First_Line(SelectTrain) ≔ FALSE
+      @act4 Quai(SelectGareUrgence↦Quai1) ≔ TRUE
+      @act5 Feux(Station_to_Line_Feux(SelectTrain)) ≔ TRUE
   end
 
-  event Emergency_To_Second_Line
+  event SecondaryStation_To_Second_Line extends Emergency_To_Second_Line 
     any SelectGare // Sélectionne la gare d'urgence de départ
         SelectTrain // Sélectionne le nom du train présent dans la gare de départ (le nom est répresenté par la ligne de trajet du train)
 
@@ -130,10 +168,16 @@ events
       @grd6 Aiguillages(SelectTrain) = TRUE
       @grd7 State_system = FALSE
       @grd8 State_brake = FALSE
+      @grd9 Quai(SelectGare↦Quai1) = TRUE
+      @grd10 Feux(Secondary_Station_to_Line_Feux(SelectTrain)) = TRUE
+
     then
       @act1 nb_train_urgence(SelectGare) ≔ nb_train_urgence(SelectGare) − 1
       @act2 Second_Line(SelectTrain) ≔ Second_Line(SelectTrain) + 1
       @act3 In_Second_Line(SelectTrain) ≔ TRUE
+      @act4 Quai(SelectGare↦Quai1) ≔ FALSE
+      @act5 Feux(Secondary_Station_to_Line_Feux(SelectTrain)) ≔ FALSE
+      @act6 Appli_Voyageur(SelectGare) ≔ FALSE
   end
 
   event Line_To_Second_Line
@@ -152,14 +196,14 @@ events
       @act1 In_Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ TRUE
       @act2 Line(SelectGareLine↦SelectSecondGareLine) ≔ Line(SelectGareLine↦SelectSecondGareLine) − 1
       @act3 Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ Second_Line(SelectGareLine↦SelectSecondGareLine) + 1
-      @act4 State_system :∣ (State_system ∈ BOOL) ∧ ((Line(SelectGareLine↦SelectSecondGareLine) = 1 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)=1 ⇒ State_system' = TRUE) ∧ (Line(SelectGareLine↦SelectSecondGareLine) ≠ 1 ∨ Second_Line(SelectSecondGareLine↦SelectGareLine)≠1 ⇒ State_system' = FALSE))
+      @act4 State_system :∣ (State_system' ∈ BOOL) ∧ ((Line(SelectGareLine↦SelectSecondGareLine) = 1 ∧ Second_Line(SelectSecondGareLine↦SelectGareLine)=1 ⇒ State_system' = TRUE) ∧ (Line(SelectGareLine↦SelectSecondGareLine) ≠ 1 ∨ Second_Line(SelectSecondGareLine↦SelectGareLine)≠1 ⇒ State_system' = FALSE))
       @act5 In_First_Line(SelectGareLine↦SelectSecondGareLine) ≔ FALSE
   end
 
-  event Second_Line_To_Station
-    any SelectGareLine // Sélectionne la gare d où provient le train
-        SelectSecondGareLine // Sélectionne la gare d arrivée où le train est censé aller
-        SelectGare // Sélectionne la gare d arrivée (Peut-être redondant mais nécessaire pour les gardes de l événement)
+  event Second_Line_To_MainStation extends Second_Line_To_Station 
+    any SelectGareLine // Sélectionne la gare d'où provient le train
+        SelectSecondGareLine // Sélectionne la gare d'arrivée où le train est censé aller
+        SelectGare // Sélectionne la gare d'arrivée (Peut-être redondant mais nécessaire pour les gardes de l'événement)
 
     where
       @grd1 SelectGareLine ∈ dom(dom(Second_Line)) ∧ SelectSecondGareLine ∈ ran(dom(Second_Line))
@@ -170,10 +214,15 @@ events
       @grd6 In_Second_Line(SelectGareLine↦SelectSecondGareLine) = TRUE ∧ In_First_Line(SelectSecondGareLine↦SelectGareLine) = FALSE
       @grd8 State_system = FALSE
       @grd9 State_brake = FALSE
+      @grd10 Quai(SelectGare↦Quai1) = FALSE
+      @grd11 Appli_Voyageur(SelectGare) = TRUE
+
     then
       @act1 Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ Second_Line(SelectGareLine↦SelectSecondGareLine) − 1
       @act2 nb_train(SelectGare) ≔ nb_train(SelectGare)+1
       @act3 In_Second_Line(SelectGareLine↦SelectSecondGareLine) ≔ FALSE
+      @act4 Quai(SelectGare↦Quai1) ≔ TRUE
+      @act5 Feux(Line_to_Station_Feux(SelectGareLine↦SelectSecondGareLine)) ≔ TRUE
   end
 
   event Choose_Aiguillage
@@ -200,6 +249,8 @@ events
       @grd5 nb_train(SelectGare) < 2
       @grd6 State_brake = FALSE
       @grd7 Line_urgence(SelectTrain) = Line_urgence(SelectSecondTrain)
+      @grd8 Quai(SelectGare↦Quai2) = FALSE
+
     then
       @act1 temp :∣ (temp' ∈ ℕ ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp'= 0) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp'=1))
       @act2 temp2 :∣ (temp2' ∈ ℕ ∧ (SelectGare = Line_Gare(SelectTrain) ⇒ temp2'= 1) ∧ ( SelectGare = Line_Gare(SelectSecondTrain)⇒ temp2'=0))
@@ -210,7 +261,7 @@ events
       @act7 State_brake ≔ TRUE
   end
 
-  event Marche_Arriere_Station
+  event Marche_Arriere_To_MainStation extends Marche_Arriere_Station 
     any SelectTrain // Sélectionne la première ligne de convois où se trouve un train
         SelectSecondTrain // Sélectionne la seconde ligne de convois où se trouve le second train
         SelectGare // Sélectionne les gares possibles pour enclencher une marche arrière
@@ -222,6 +273,8 @@ events
       @grd4 SelectGare = Line_Gare(SelectTrain) ∨ SelectGare = Line_Gare(SelectSecondTrain)
       @grd5 nb_train(SelectGare) < 2
       @grd6 Freinage_Line(SelectGare) = TRUE
+      @grd7 Quai(SelectGare↦Quai2) = FALSE
+
     then
       @act1 Line(SelectTrain) ≔ Line(SelectTrain) − temp
       @act2 Second_Line(SelectSecondTrain) ≔ Second_Line(SelectSecondTrain) − temp2
@@ -231,5 +284,19 @@ events
       @act6 State_brake ≔ FALSE
       @act7 In_First_Line(SelectTrain) ≔ temp3
       @act8 In_Second_Line(SelectSecondTrain) ≔ temp4
+      @act9 Quai(SelectGare↦Quai2) ≔ TRUE
   end
+
+ event Message_application
+    any SelectGare // Sélectionne la gare où le train arrive
+        SelectTrain // Sélectionne le nom du train arrivant dans une gare
+    where
+      @grd1 (SelectGare ∈ dom(Appli_Voyageur) ∧ Line_urgence(SelectTrain) = SelectGare ∧ Aiguillages(SelectTrain) = TRUE ∧ Line(SelectTrain) ≥ 1) ∨ (SelectGare ∈ dom(Appli_Voyageur) ∧ Line_Gare(SelectTrain) = SelectGare ∧ Aiguillages(SelectTrain) = FALSE ∧ Second_Line(SelectTrain) ≥ 1)
+      @grd2 Appli_Voyageur(SelectGare) = FALSE
+      @grd3 SelectTrain ∈ dom(Line) ∨ SelectTrain ∈ dom(Second_Line)
+    then
+      @act1 Appli_Voyageur(SelectGare) ≔ TRUE
+  end
+
 end
+ 

@@ -1,0 +1,11 @@
+context Context
+
+sets Gare Quais Traffic_Light 
+
+constants Namur Liege Bruxelles Leuven Ottignies Huy Quai1 Quai2 Lvn_Lge Lge_Lvn Lvn_Bxl Bxl_Lvn Bxl_Ott Ott_Bxl Ott_Nam Nam_Ott Huy_Nam Nam_Huy Lge_Huy Huy_Lge 
+
+axioms
+  @axm1 partition (Gare, {Namur}, {Bruxelles}, {Liege}, {Huy}, {Ottignies}, {Leuven})
+  @axm2 partition (Quais, {Quai1},{Quai2})
+  @axm3 partition (Traffic_Light, {Lvn_Lge}, {Lge_Lvn}, {Lvn_Bxl}, {Bxl_Lvn}, {Bxl_Ott}, {Ott_Bxl}, {Ott_Nam}, {Nam_Ott}, {Huy_Nam}, {Nam_Huy}, {Lge_Huy}, {Huy_Lge})
+end
