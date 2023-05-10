@@ -7,8 +7,6 @@ GButton buttonB_L;
 GButton buttonN_L;
 GButton buttonB_N;
 GButton secondary_button;
-PImage gare;
-
 
 float rectX = 100; // position horizontale initiale du rectangle
 float rectY = 100; // position verticale initiale du rectangle
@@ -17,13 +15,12 @@ float rectSpeedY = 0; // vitesse de déplacement verticale du rectangle
 int[][] positions;
 
 void setup() {
-  buttonB_L = new GButton(this, 0, 0, 50, 50, "Bruxelles-Liege");
+  buttonB_L = new GButton(this, 0, 150, 50, 50, "Bruxelles-Liege");
+  buttonN_L = new GButton(this, 0, 200, 50, 50, "Namur-Liege");
+  buttonB_N = new GButton(this, 0, 250, 50, 50, "Bruxelles-Namur");
+  secondary_button = new GButton(this, 0, 300, 50,50, "Ligne secondaire");
 
-  buttonN_L = new GButton(this, 0, 50, 50, 50, "Namur-Liege");
-  buttonB_N = new GButton(this, 0, 100, 50, 50, "Bruxelles-Namur");
-  secondary_button = new GButton(this, 0, 150, 50,50, "Ligne secondaire");
-
-  size(600, 400);
+  size(800, 400);
   textSize(18);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
@@ -32,7 +29,6 @@ void setup() {
   buttonN_L.addEventHandler(this, "handleButtonN_L_click");
   buttonB_N.addEventHandler(this, "handleButtonB_N_click");
   secondary_button.addEventHandler(this, "handleButtonSecondary_click");
-  gare = loadImage("gare.png"); // chargement de l'image
   GButton.useRoundCorners(false);
 }
 
@@ -40,7 +36,7 @@ void draw() {
   
   background(255);
   
-  //Coordonnées des gares (ne pas preter attention aux couleurs)
+  //Coordonnées des gares
   //Bruxelles (100,100) ROUGE
   //Namur (300,300) VERT
   //Liege (500,100) BLEU
@@ -51,52 +47,52 @@ void draw() {
   //DESSIN DES GARES
   
   // Dessiner (lge)
-  noStroke();
-  fill(0, 0, 255);
-  image(gare,500,100);
+  strokeWeight(1);
+  fill(0, 0, 255,127);
+  rect(520,100,100,50);
   fill(0);
   String gare_L = "Liege";
   text(gare_L, 500, 130);
   
   // Dessiner (namur)
-  noStroke();
-  fill(0, 255, 0);
-  image(gare, 300, 300);
+
+  fill(0, 255, 0,127);
+  rect(300,320,50,100);
   fill(0);
   String gare_N = "Namur";
-  text(gare_N, 300, 330);
+  text(gare_N, 300, 260);
   
   // Dessiner (BXL)
-  noStroke();
-  fill(255, 0, 0);
-  image(gare,100,100);
+
+  fill(255, 0, 0,127);
+  rect(80,100,100,50);
   fill(0);
   String gare_B = "Bruxelles";
   text(gare_B, 100, 130);
   
   // Dessiner (ott)
-  noStroke();
-  fill(255, 255, 0);
-  ellipse(200,200, 50, 50);
+  //noStroke();
+  fill(255, 255, 0, 127);
+  rect(200,200, 75, 75);
   fill(0);
   String gare_O = "Ott";
-  text(gare_O, 200, 200);
+  text(gare_O, 185, 215);
 
   // Dessiner (huy)
-  noStroke();
-  fill(0, 255, 255);
-  ellipse(400,200, 50, 50);
+  //noStroke();
+  fill(0, 255, 255, 127);
+  rect(400,200, 75, 75);
   fill(0);
   String gare_H = "Huy";
-  text(gare_H, 400, 200);
+  text(gare_H, 415, 215);
   
   // Dessiner (lvn)
-  noStroke();
-  fill(255, 0, 255);
-  ellipse(300,100, 50, 50);
+  //noStroke();
+  fill(255, 0, 255, 127);
+  rect(300,90, 100, 60);
   fill(0);
   String gare_Ln = "Lvn";
-  text(gare_Ln, 300, 100);
+  text(gare_Ln, 300, 110);
   
   //DESSIN DES VOIES
   
@@ -125,7 +121,45 @@ void draw() {
   line(100, 100, 300, 300);
   line(300, 300, 500, 100);
   line(100, 100, 500, 100);
+  
+  fill(255);
+  strokeWeight(1);
+  
+  //Dédoublement voies Liege
+  line(500, 100, 515,85);
+  line(500, 100, 515,115);
+  line(515,115,550,115);
+  line(515,85,550,85);
+  
+  //Dédoublement Bruxelles
+  line(100, 100, 85,85);
+  line(100, 100, 85,115);
+  line(85,115,50,115);
+  line(85,85,50,85);
+  
+  //Dédoublement Namur
+  line(300, 300, 285,315);
+  line(300, 300, 315,315);
+  line(285,315,285,345);
+  line(315,315,315,345);
+  
+  //Dedoublement Huy
+  //line(425, 175, 400,175);
+  //line(375, 225, 375,200);
+  //line(375,200,400,175);
+  
+  //Dedoublement Leuven
+  //line(250, 100, 270, 80);
+  //line(350, 100, 330 ,80);
+  //line(330,80,270,80);
+
+  //Dedoublement Ottignies
+  //line(175, 175, 200,175);
+  //line(225, 225, 225,200);
+  //line(225,200,200,175);
+  
   strokeWeight(3);
+  
   
   
   //DEPLACEMENT DU TRAIN
@@ -135,22 +169,23 @@ void draw() {
 
   rectX += rectSpeedX;
   rectY += rectSpeedY;
-
-for (int i = 0; i < positions.length; i++) {
-  if (rectX == positions[i][0] && rectY == positions[i][1]) {
-    rectSpeedX = 0;
-    rectSpeedY = 0;
-    break; // sortir de la boucle si une position correspond
+  //Si le train est à l'une des positions, il s'arrete
+  for (int i = 0; i < positions.length; i++) {
+    if (rectX == positions[i][0] && rectY == positions[i][1]) {
+      rectSpeedX = 0;
+      rectSpeedY = 0;
+      break; // sortir de la boucle si une position correspond
+    }
   }
-}
 
 
 
-if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
+  if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
     fill(0, 255, 0);
   } else {
     fill(255, 0, 0);
   }
+  
   buttonB_L.setEnabled(false);
   buttonB_N.setEnabled(false);
   buttonN_L.setEnabled(false);
@@ -168,6 +203,12 @@ if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
     secondary_button.setEnabled(true);}
   rect(rectX, rectY, 50, 25,3);
   
+  //Application
+  fill(220,220,220);
+  rect(700,300,200,300);
+  fill(0);
+  String App_Titre = "Application";
+  text(App_Titre, 700, 175);
 }
 
 
@@ -216,12 +257,11 @@ else if ((rectX == 300 && rectY == 300)|| !sens_B_N &&((rectX == 150 && rectY ==
     sens_B_N = false;
     }}}
     
+    
 //Gestion des lignes secondaires
 
 public void handleButtonSecondary_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {
-    println(rectX);
-    println(rectY);
   if(rectX == 150 && rectY == 150 && sens_B_N){
     rectSpeedY = 1;
     }
