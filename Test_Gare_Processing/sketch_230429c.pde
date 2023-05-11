@@ -1,4 +1,5 @@
 import g4p_controls.*;
+import java.awt.Font;
 
 boolean sens_B_L = true;
 boolean sens_N_L = true;
@@ -8,6 +9,8 @@ GButton buttonN_L;
 GButton buttonB_N;
 GButton secondary_button;
 
+float SCALING = 1.8;
+
 float rectX = 100; // position horizontale initiale du rectangle
 float rectY = 100; // position verticale initiale du rectangle
 float rectSpeedX = 0; // vitesse de déplacement horizontale du rectangle
@@ -15,12 +18,20 @@ float rectSpeedY = 0; // vitesse de déplacement verticale du rectangle
 int[][] positions;
 
 void setup() {
-  buttonB_L = new GButton(this, 0, 150, 50, 50, "Bruxelles-Liege");
-  buttonN_L = new GButton(this, 0, 200, 50, 50, "Namur-Liege");
-  buttonB_N = new GButton(this, 0, 250, 50, 50, "Bruxelles-Namur");
-  secondary_button = new GButton(this, 0, 300, 50,50, "Ligne secondaire");
+  windowResizable(true);
+  buttonB_L = new GButton(this, 0, 150*SCALING, 50*SCALING, 50*SCALING, "Bruxelles-Liege");
+  buttonN_L = new GButton(this, 0, 200*SCALING, 50*SCALING, 50*SCALING, "Namur-Liege");
+  buttonB_N = new GButton(this, 0, 250*SCALING, 50*SCALING, 50*SCALING, "Bruxelles-Namur");
+  secondary_button = new GButton(this, 0, 300*SCALING, 50*SCALING,50*SCALING, "Ligne secondaire");
+  Font font = new Font ("Times New Roman", Font.PLAIN, int(10*SCALING));
+  buttonB_L.setFont(font);
+  buttonN_L.setFont(font);
+  buttonB_N.setFont(font);
+  secondary_button.setFont(font);
+  buttonB_L.setFont(font);
 
-  size(800, 400);
+
+  size(1920, 1080);
   textSize(18);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
@@ -30,11 +41,14 @@ void setup() {
   buttonB_N.addEventHandler(this, "handleButtonB_N_click");
   secondary_button.addEventHandler(this, "handleButtonSecondary_click");
   GButton.useRoundCorners(false);
+  
 }
 
 void draw() {
-  
+  scale(SCALING);
   background(255);
+  noStroke();
+  
   
   //Coordonnées des gares
   //Bruxelles (100,100) ROUGE
@@ -201,7 +215,7 @@ void draw() {
     buttonN_L.setEnabled(true);}
   if((rectX == 200 && rectY == 100 && sens_B_L) || (rectX == 400 && rectY == 100 &&!sens_B_L)|| (rectX == 150 && rectY == 150 && sens_B_N)|| (rectX == 450 && rectY == 150 && sens_N_L)|| (rectX == 300 && rectY == 200) || (rectX == 150 && rectY == 250)|| (rectX == 250 && rectY == 250 &&!sens_B_N)|| (rectX == 350 && rectY == 250 && !sens_N_L)|| (rectX == 450 && rectY == 250)){
     secondary_button.setEnabled(true);}
-  rect(rectX, rectY, 50, 25,3);
+  rect(rectX, rectY, 40, 15,3);
   
   //Application
   fill(220,220,220);
@@ -209,6 +223,7 @@ void draw() {
   fill(0);
   String App_Titre = "Application";
   text(App_Titre, 700, 175);
+  scale(1/SCALING);
 }
 
 
@@ -255,7 +270,7 @@ else if ((rectX == 300 && rectY == 300)|| !sens_B_N &&((rectX == 150 && rectY ==
     rectSpeedX = -1;
     rectSpeedY = -1;
     sens_B_N = false;
-    }}}
+    ;}}}
     
     
 //Gestion des lignes secondaires
