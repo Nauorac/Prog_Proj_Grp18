@@ -1,7 +1,8 @@
 import javax.sound.sampled.Line;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Scanner;
+//Version 5
 public class TrainSystems {
     /*
     CONTEXT EVENTB retranscrit en JAVA :
@@ -219,10 +220,21 @@ public class TrainSystems {
         Appli_Voyageur.put(Gare.Leuven, false);
         Appli_Voyageur.put(Gare.Ottignies, false);
     }
-    /*
-    Définition des événements en tant que classe
+
+    /**
+     *  Faire apparaitre un train dans une gare principale et occupe le quai 1.
+     *
+     * @param selectGare La gare où doit apparaître le train de type Gare(Constante)
+     * @requires La gare apparient à une garePrincipale et non Secondaire.
+     *           Nombre total de train dans le système strictement inférieur à 4
+     *           Nombre total de train dans la gare strictement inférieur à 2
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           Quai1 numéro doit être libre
+     * @modifies nbTrain : Le nombre de train dans la gare
+     *           nbTrainTotal : Le nombre de train total dans le système
+     *           quai : Changement d'état à true déisgnant que le quai 1 est occupé.
      */
-    //Permet l'apparition d'un train
     public void apparitionTrain(Gare selectGare) {
         if (garePrincipale.containsKey(selectGare)){
             if (nbTrain.get(selectGare) < 2 && nbTrainTotal < 4 && !freinageLine.get(selectGare) && !stateSystem && !stateBrake
@@ -233,19 +245,60 @@ public class TrainSystems {
             }
         }
     }
+    /**
+     *  Introduit un train présent dans une garePrincipale sur une ligne de convoi
+     *
+     * @param selectGareDepart La gare de départ de type Gare(Constante)
+     * @param selectGareDestination La gare de destination de type Gare(Constante)
+     * @param selectQuai Le quai où se trouve le train dans une gare de type Quai(Constante)
+     * @requires La gare de départ et de déstination appartiennet à une garePrincipale et non Secondaire.
+     *           Nombre de train de la gare de départ doit être supérieur ou égal à 1
+     *           Nombre de train présent sur la ligne doit être strictement inférieur à 1
+     *           Le feux de la gare pour circuler sur la voie doit indiquer true (FeuVert)
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           Le quai sélectionné doit contenir un train (true)
+     * @modifies nbTrain : Le nombre de train dans la gare
+     *           quai : Changement d'état à true déisgnant que le quai 1 est maintenant libre
+     *           Line : La ligne de convoi est incrémenté de + 1
+     *           Feux : Le feux se met à jour (false => feuRouge) indiquant un train sur la ligne de convois
+     */
     public void MainStation_To_Line (Gare selectGareDepart, Gare selectGareDestination, Quai selectQuai ){
-        if (nbTrain.get(selectGareDepart) >= 1 && Line.get(selectGareDepart.name()+"↦"+selectGareDestination.name()) < 1
+        if (garePrincipale.containsKey(selectGareDepart) && garePrincipale.containsKey(selectGareDestination)
+                && nbTrain.get(selectGareDepart) >= 1 && Line.get(selectGareDepart.name()+"↦"+selectGareDestination.name()) < 1
                 && Feux.get(Station_To_Line_Feux.get(selectGareDepart.name()+"↦"+selectGareDestination.name()))
                 && !stateSystem && !stateBrake && (quai.get(selectGareDepart).get(selectQuai))){
             nbTrain.put(selectGareDepart, nbTrain.get(selectGareDepart) - 1) ;
             quai.get(selectGareDepart).put(selectQuai, false);
             Line.put(selectGareDepart.name()+"↦"+selectGareDestination.name(), Line.get(selectGareDepart.name()+"↦"+selectGareDestination.name()) + 1) ;
             Feux.put(Station_To_Line_Feux.get(selectGareDepart.name()+"↦"+selectGareDestination.name()), false) ;
-            if (nbTrain.get(selectGareDepart) == 1){Appli_Voyageur.put(selectGareDepart, false);}
         }
     }
+    /**
+     *  Introduit un train présent sur une ligne de convoi dans une gare Secondaire
+     *
+     * @param SelectTrain Le nom du train de type String
+     * @param SelectGareUrgence La gare secondaire de destination de type Gare(constante)
+     * @requires La gare de destination doit être une gare secondaire
+     *           Le nom du train doit correspondre au nom d'une ligne de convoi
+     *           La ligne de convoi du train choisi doit correspondre à la gare secondaire auquel la ligne est lié
+     *           La ligne de convoi doit être supérieur ou égal à 1
+     *           Le nombre de train présent dans la gare doit être strictement inférieur à 1
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           Le quai sélectionné doit être libre (false)
+     *           L'aiguillages associé à la ligne de convoi doit être actionné (true) pour permettre le passage du train
+     *           Les voyageurs doivent avoir été avertis avant que le train entre en gare
+     * @modifies Line : Le nombre de train présent sur la voie est décrémenté de 1
+     *           nbTrainUrgence : Le nombre de train dans la gare secondaire doit être décrémenté de 1
+     *           In_First_Line : Les bornes de contact signalent que le train n'est plus sur la voie
+     *           quai : Changement d'état à true déisgnant que le quai 1 est occupé
+     *           Feux : Le feux se met à jour (true => feuVert) indiquant que la ligne ne contient aucun train
+     *           Appli : L'application se met à jour lorsque un train rentre dans une gare
+     */
     public void Line_To_Secondary_Station(String SelectTrain, Gare SelectGareUrgence) {
-        if (Line_Urgence.get(SelectTrain) == SelectGareUrgence) {
+        if (garesUrgence.containsKey(SelectGareUrgence) && Line_Urgence.containsKey(SelectTrain)
+                && Line_Urgence.get(SelectTrain) == SelectGareUrgence) {
             if (Line.get(SelectTrain) >= 1 && nbTrainUrgence.get(SelectGareUrgence) < 1
                     &&!stateBrake && !stateSystem && !quai.get(SelectGareUrgence).get(Quai.Quai1) && Aiguillages.get(SelectTrain)
                      && Appli_Voyageur.get(SelectGareUrgence)) {
@@ -254,16 +307,39 @@ public class TrainSystems {
                 In_First_Line.put(SelectTrain, false);
                 quai.get(SelectGareUrgence).put(Quai.Quai1, true);
                 Feux.put(Line_to_Secondary_Station_Feux.get(SelectTrain), true) ;//A corrgier ?
+                Appli_Voyageur.put(SelectGareUrgence,false) ;
             }
         }
     }
 
+    /**
+     *  Introduit un train présent dans une gareSecondaire sur une ligne de convoi
+     *
+     * @param SelectGareDepart La gare de départ de type Gare(constante)
+     * @param SelectTrain Le nom du train de type String
+     * @requires La gare de départ doit être une gare secondaire
+     *           Le nom du train doit correspondre au nom de la ligne de convoi du train choisi doit correspondre à la gare secondaire auquel la ligne est lié
+     *           Le nom du train choisi doit correspondre à la gare de départ auquel la ligne est lié
+     *           Le nombre de train présent dans la gare choisi doit être supérieur ou égal à 1
+     *           Le nombre de train présent sur la ligne de convoi secondaire doit être strictement inférieur à 1
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           Le quai 1 de la gare choisi doit être occupé (true)
+     *           L'aiguillages associé à la ligne de convoi secondaire doit être actionné (true) pour permettre le passage du train
+     *           L'état des feux doit indiquer que le feux est vert pour sortir de la gare
+     * @modifies nbTrainUrgence : Le nombre de train dans la gare secondaire doit être décrémenté de 1
+     *           Second_Line : La seconde ligne de convoi est incrémenté de + 1
+     *           In_Second_Line : Les bornes de contact signalent que le train est sur la voie
+     *           quai : Changement d'état à true déisgnant que le quai 1 est libre
+     *           Feux : Le feux se met à jour (false => feuRouge) indiquant que la ligne  contient un train
+     */
     public void Secondary_Station_To_Second_Line (Gare SelectGareDepart, String SelectTrain){
         String line = SelectTrain;
         String[] gares = line.split("↦");
-        String gareDepartTrain = gares[0]; // "Namur"
-        String gareArriveeTrain = gares[1]; // "Bruxelles"
-        if(Line_Urgence.get(SelectTrain) == SelectGareDepart && nbTrainUrgence.get(SelectGareDepart) >= 1 && Second_Line.get(SelectTrain) < 1
+        String gareDepartTrain = gares[0];
+        String gareArriveeTrain = gares[1];
+        if(garesUrgence.containsKey(SelectGareDepart) && Second_Line.containsKey(SelectTrain)
+                && Line_Urgence.get(SelectTrain) == SelectGareDepart && nbTrainUrgence.get(SelectGareDepart) >= 1 && Second_Line.get(SelectTrain) < 1
                 && Aiguillages.get(gareArriveeTrain+"↦"+gareDepartTrain) && !stateSystem && !stateBrake
                 && quai.get(SelectGareDepart).get(Quai.Quai1)
                 && Feux.get(Secondary_Station_To_Line_Feux.get(SelectTrain))){
@@ -271,12 +347,35 @@ public class TrainSystems {
             Second_Line.put(SelectTrain,Second_Line.get(SelectTrain)+1);
             In_Second_Line.put(SelectTrain,true) ;
             quai.get(SelectGareDepart).put(Quai.Quai1,false) ;
-            Appli_Voyageur.put(SelectGareDepart,false) ;
             Feux.put(Secondary_Station_To_Line_Feux.get(SelectTrain), false) ;
         }
     }
+    /**
+     *  Introduit un train présent sur une ligne de convoi secondaire dans une gare Principale
+     *
+     * @param SelectGareDepart La gare principale de départ de type Gare(constante)
+     * @param SelectGareArrivee La gare principale de destination de type Gare(constante)
+     * @requires La gare de départ doit être une gare principale
+     *           La gare de destination doit être une gare principale
+     *           La gare de départ doit être différentre de la gare de destination
+     *           Le nombre de train présent dans la gare choisi doit être strictement inférieur à 1
+     *           Le nombre de train présent sur la ligne de convoi secondaire doit être supérieur ou égal à 1
+     *           Les bornes de contact doivent indiquer qu'un train se trouve sur la seconde ligne de convoi
+     *           Les bornes de contact doivent indiquer qu'aucun train se trouve sur la premiere ligne de convoi
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           Le quai 1 de la gare choisi doit être libre (false)
+     *           L'application doit avoir signalé au préalable qu'un train arrive en gare
+     * @modifies nbTrain : Le nombre de train dans la gare principale doit être incrémenté de + 1
+     *           Second_Line : La seconde ligne de convoi est décrémenté de - 1
+     *           In_Second_Line : Les bornes de contact signalent que le train n'est plus sur la ligne de convoi
+     *           quai : Changement d'état à true déisgnant que le quai 1 est occupé
+     *           Appli: Le train est entré en gare donc fin de la notification d'approche d'un train dans une gare
+     *           Feux : Le feux se met à jour (true => feuVert) indiquant que la ligne  ne contient aucun train
+     */
     public void Second_Line_To_MainStation (Gare SelectGareDepart, Gare SelectGareArrivee){
-        if(SelectGareDepart != SelectGareArrivee && Second_Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())>=1
+        if(garePrincipale.containsKey(SelectGareDepart) && garePrincipale.containsKey(SelectGareArrivee)
+                && SelectGareDepart != SelectGareArrivee && Second_Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())>=1
                 && nbTrain.get(SelectGareArrivee)<1 && In_Second_Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())
                 && !In_First_Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())
                 && !stateSystem && !stateBrake && !quai.get(SelectGareArrivee).get(Quai.Quai1)
@@ -285,13 +384,38 @@ public class TrainSystems {
             nbTrain.put(SelectGareArrivee, nbTrain.get(SelectGareArrivee)+1);
             In_Second_Line.put(SelectGareDepart.name()+"↦"+SelectGareArrivee.name(),false);
             quai.get(SelectGareArrivee).put(Quai.Quai1,true) ;
+            Appli_Voyageur.put(SelectGareArrivee, false);
             System.out.println(Feux.get(Line_To_Station_Feux.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())));
             Feux.put(Line_To_Station_Feux.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name()), true) ;
             System.out.println(Feux.get(Line_To_Station_Feux.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())));
         }
     }
+    /**
+     *  Introduit un train présent sur la première ligne de convoi vers la seconde ligne de convoi
+     *
+     * @param SelectGareDepart La gare principale de départ de type Gare(constante)
+     * @param SelectGareArrivee La gare principale de destination de type Gare(constante)
+     * @requires La gare de départ doit être une gare principale
+     *           La gare de destination doit être une gare principale
+     *           La gare de départ doit être différentre de la gare de destination
+     *           Le nombre de train présent sur la premiere ligne de convoi  doit être égal à 1
+     *           Le nombre de train présent sur la seconde ligne de convoi  doit strictement inférieur à 1
+     *           Les aiguillages correspondant à la permière ligne de convoi ne sont pas actionné (false)
+     *           Etat des freins à FALSE
+     *           Etat du système à FALSE
+     *           (La premiere ligne de convoi est différente de 1 ET la seconde différente de 1 OU
+     *           La premiere ligne de convoi est différente de 1 ET la seconde différente de 0 OU
+     *           La premiere ligne de convoi est différente de 0 ET la seconde différente de 1)
+     * @modifies In_Second_Line : Les bornes de contact signalent que le train est sur la seconde ligne de convoi
+     *           Line : Le nombre de train sur La premiere ligne de convoi est décrémenté de - 1
+     *           Second_Line : Le nombre de train sur la seconde ligne de convoi est incrémenté de + 1
+     *           In_First_Line : Les bornes de contact signalent que le train n'est plus sur la première ligne de convoi
+     *           Appli : Si il y a un train sur la même ligne de convoi => StateSystem = true
+     *           Appli : Si il y a aucun train sur la même ligne de convoi => StateSystem = false
+     */
     public void Line_To_Second_Line ( Gare SelectGareDepart,Gare SelectGareArrivee){
-        if(SelectGareDepart != SelectGareArrivee && Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name()) == 1
+        if(garePrincipale.containsKey(SelectGareDepart) && garePrincipale.containsKey(SelectGareArrivee)
+                && SelectGareDepart != SelectGareArrivee && Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name()) == 1
                 && Second_Line.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())<1
                 && !Aiguillages.get(SelectGareDepart.name()+"↦"+SelectGareArrivee.name())
                 && !stateSystem && !stateBrake
@@ -311,21 +435,66 @@ public class TrainSystems {
         }
     }
 
+    /**
+     *  Modifier la postion d'un aiguillage (true or false).
+     *
+     * @param SelectLine Le nom de la ligne associé à l'aiguillages de type String
+     * @param SelectAction L'action, soit true ou false de type BOOL
+     * @requires La ligne choisi doit appartenir aux lignes d'aiguillages ou l'action de changer l'aiguillage est possible
+     *           L'action doit être différente de l'état de l'aiguillages
+     * @modifies Aiguillages : Modifie la position de l'aiguillage choisi (true or false)
+     */
     public void Choose_Aiguillage( String SelectLine, Boolean SelectAction ){
-        if(!Aiguillages.get(SelectLine)) {
+        if(Aiguillages.containsKey(SelectLine) && SelectAction != Aiguillages.get(SelectLine)) {
             Aiguillages.put(SelectLine, SelectAction);
         }
     }
+    /**
+     *  Notifie les voyageurs qu'un train est en approche en modifiant l'état de l'application
+     *
+     * @param SelectTrain Le nom du train de type String
+     * @param SelectGareArrivee La gare d'arrivée de type Gare
+     * @requires La notification du train en approche de la gare doit être sur false
+     *           Le nom du train doit correspondre aux noms des trains disponibles dans l'application
+     *           (La gare d'arrivée doit correspondre à ligne de convoi secondaire
+     *           ET La gare d'arrivée doit correspondre à la l'aiguillages de cette même ligne
+     *           ET la ligne de convois secondaire doit comporter au moins un train)
+     *           OU (La gare d'arrivée doit correspondre à ligne de convoi principale
+     *           ET La ligne de convois principale doit comporter au moins un train)
+     * @modifies Appli : Notifie les voyageurs que le train choisi est en approche de la gare choisi
+     */
     public void Message_Application (String SelectTrain, Gare SelectGareArrivee){
-        if ((Line_Urgence.get(SelectTrain) == SelectGareArrivee && Aiguillages.get(SelectTrain) && Line.get(SelectTrain)>=1) || Line_Gare.get(SelectTrain) == SelectGareArrivee && Second_Line.get(SelectTrain) >= 1){}
-        if (!Appli_Voyageur.get(SelectGareArrivee)){
-            Appli_Voyageur.put(SelectGareArrivee,true);
+        if (!Appli_Voyageur.get(SelectGareArrivee) && Appli_Voyageur.containsKey(SelectGareArrivee)){
+            if ((Line_Urgence.get(SelectTrain) == SelectGareArrivee && Aiguillages.get(SelectTrain) && Line.get(SelectTrain)>=1)
+                    || Line_Gare.get(SelectTrain) == SelectGareArrivee && Second_Line.get(SelectTrain) >= 1){
+                Appli_Voyageur.put(SelectGareArrivee,true);
+            }
         }
     }
-
+    /**
+     *  Modifier l'état du système pour enclecher plus tard une marche arrière
+     *
+     * @param SelectTrain Le nom du train de type String
+     * @param SelectSecondTrain La nom du second train de type String
+     * @param SelectGare Le nom de la gare ou l'un des trains effectuera une marche arrière prochainement
+     * @requires Le premier train doit être différent du second train
+     *           Le nombre de train présent sur la premiere ligne de convoi  doit être supérieur ou égal à 1
+     *           Le nombre de train présent sur la seconde ligne de convoi  doit être supérieur ou égal à 1
+     *           Le nombre de train de la gare choisi doit être strictement inférieur 2
+     *           L'état des freins doit être false
+     *           Le nombre train figurant sur la seconde ligne doit correspondre au nombre du second train se trouvant sur la même ligne
+     *           Le quai numéro 2 doit être libre
+     *           (Le nombre de train présent sur la seconde ligne doit être strictement inférieur à 1
+     *           ET la gare choisi doit correspondre à la ligne de convoi où se trouve le premier train sur laquelle se trouve la gare)
+     *           OU( la gare choisi doit correspondre à la ligne de convoi où se trouve le second train sur laquelle se trouve la gare)
+     * @modifies Etat des freins true
+     *           Etat du système true
+     *           Etat des freins du train choisi true
+     *           Modifie les variables temporaires en fonction de la gare choisi pour actionner la marche arrière
+     */
     public void Freinage_Urgence (String SelectTrain, String SelectSecondTrain, Gare SelectGare){
         if( SelectTrain != SelectSecondTrain && Line.get(SelectTrain) >= 1 && Second_Line.get(SelectSecondTrain)>=1
-        && nbTrain.get(SelectGare) < 2 && !stateBrake && Line_Urgence.get(SelectTrain) == Line_Urgence.get(SelectTrain) && !quai.get(SelectGare).get(Quai.Quai2)){
+        && nbTrain.get(SelectGare) < 2 && !stateBrake && Line_Urgence.get(SelectTrain) == Line_Urgence.get(SelectSecondTrain) && !quai.get(SelectGare).get(Quai.Quai2)){
             if ((Line.get(SelectSecondTrain) < 1 && SelectGare == Line_Gare.get(SelectTrain)) || (SelectGare == Line_Gare.get(SelectSecondTrain))) {
                 freinageLine.put(SelectGare, true);
                 stateSystem = true;
@@ -345,10 +514,36 @@ public class TrainSystems {
             }
         }
     }
+    /**
+     *  Effectue une marche arrière de l'un des deux trains vers une gare principale
+     *
+     * @param SelectTrain Le nom du train de type String
+     * @param SelectSecondTrain La nom du second train de type String
+     * @param SelectGare Le nom de la gare ou l'un des trains effectuera une marche arrière prochainement
+     * @requires Le premier train doit être différent du second train
+     *           Le nombre de train présent sur la premiere ligne de convoi  doit être supérieur ou égal à 1
+     *           Le nombre de train présent sur la seconde ligne de convoi  doit être supérieur ou égal à 1
+     *           Le nombre de train de la gare choisi doit être strictement inférieur 2
+     *           La gare doit correspondre aux lignes de convoi disponible pour une marche arrière
+     *           L'état des freins doit être true
+     *           Le nombre train figurant sur la seconde ligne doit correspondre au nombre du second train se trouvant sur la même ligne
+     *           Le quai numéro 2 doit être libre
+     *           (Le nombre de train présent sur la seconde ligne doit être strictement inférieur à 1
+     *           ET la gare choisi doit correspondre à la ligne de convoi où se trouve le premier train sur laquelle se trouve la gare)
+     *           OU( la gare choisi doit correspondre à la ligne de convoi où se trouve le second train sur laquelle se trouve la gare)
+     * @modifies Décremente de -1 le nombre de train sur la ligne de convoi choisi
+     *           Incrémente de +1 le nombre de train dans la gare choisi
+     *           Etat des freins à false
+     *           Etat du système à false
+     *           Etat des freins du train choisi true
+     *           Mets à jour les bornes de contact en fonction du train choisi pour la marche arrière
+     *           Le quai numéro 2 de la gare choisi devient occupé (true)
+     *
+     */
     public void Marche_Arriere_To_MainStation(String SelectTrain, String SelectSecondTrain, Gare SelectGare){
         if(Line.get(SelectTrain) >= 1 && Second_Line.get(SelectSecondTrain) >= 1
                 && SelectTrain != SelectSecondTrain && nbTrain.get(SelectGare) < 2
-                && freinageLine.get(SelectGare) && !quai.get(SelectGare).get(Quai.Quai2) && (SelectGare == Line_Gare.get(SelectTrain)) || SelectGare == Line_Gare.get(SelectSecondTrain)){
+                && freinageLine.get(SelectGare) && !quai.get(SelectGare).get(Quai.Quai2) && ((SelectGare == Line_Gare.get(SelectTrain)) || SelectGare == Line_Gare.get(SelectSecondTrain))){
             Line.put(SelectTrain,Line.get(SelectTrain) - temp );
             Second_Line.put(SelectSecondTrain,Second_Line.get(SelectSecondTrain) - temp2 );
             nbTrain.put(SelectGare, nbTrain.get(SelectGare) + 1) ;
@@ -360,10 +555,27 @@ public class TrainSystems {
             quai.get(SelectGare).put(Quai.Quai2, true);
         }
     }
+    public void Lancement_Interaction (Gare SelectGareDepart, Gare SelectGareArrivee){
+        if (nbTrainTotal < 1) {
+        System.out.println("Plusieurs choix s'offrent à vous");
+        }
+
+    }
+    public static String saisie(String message) {
+        Scanner sas = new Scanner(System.in) ;
+        System.out.print(message);
+        return sas.next() ;}
     public static void main(String[] args) {
+        /*Scanner clavier = new Scanner(System.in) ;
+        System.out.print("Veuillez saisir une gare de départ: ");
+        String depart = clavier.next();
+        Gare GareDepart = Gare.valueOf(depart);
+        System.out.print("Veuillez saisir une gare de destination: ");
+        String destination = clavier.next();
+        Gare GareDestination = Gare.valueOf(destination);
         TrainSystems trainSystems = new TrainSystems();
-        trainSystems.apparitionTrain(TrainSystems.Gare.Namur);
-        trainSystems.apparitionTrain(TrainSystems.Gare.Bruxelles);
+        trainSystems.apparitionTrain(GareDepart);
+        trainSystems.apparitionTrain(GareDestination);
         trainSystems.MainStation_To_Line(Gare.Bruxelles, Gare.Namur, Quai.Quai1);
         trainSystems.MainStation_To_Line(Gare.Namur, Gare.Bruxelles, Quai.Quai1);
         trainSystems.Choose_Aiguillage("Namur↦Bruxelles", true);
@@ -392,5 +604,7 @@ public class TrainSystems {
         System.out.println(valeurtest5);
         System.out.println(valeurtest6);
         System.out.println(valeurtest7);
+*/
+
     }
     }
