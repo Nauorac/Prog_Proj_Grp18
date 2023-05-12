@@ -2,7 +2,7 @@ import javax.sound.sampled.Line;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-//Version 5
+//Version 6
 public class TrainSystems {
     /*
     CONTEXT EVENTB retranscrit en JAVA :
@@ -273,6 +273,8 @@ public class TrainSystems {
             Line.put(selectGareDepart.name()+"↦"+selectGareDestination.name(), Line.get(selectGareDepart.name()+"↦"+selectGareDestination.name()) + 1) ;
             Feux.put(Station_To_Line_Feux.get(selectGareDepart.name()+"↦"+selectGareDestination.name()), false) ;
         }
+        else { if (!quai.get(selectGareDepart).get(selectQuai)){System.out.println("Il n'y aucun train sur ce quai ");}}
+
     }
     /**
      *  Introduit un train présent sur une ligne de convoi dans une gare Secondaire
@@ -555,17 +557,99 @@ public class TrainSystems {
             quai.get(SelectGare).put(Quai.Quai2, true);
         }
     }
-    public void Lancement_Interaction (Gare SelectGareDepart, Gare SelectGareArrivee){
-        if (nbTrainTotal < 1) {
-        System.out.println("Plusieurs choix s'offrent à vous");
-        }
+    public void Lancement_Interaction (){
+        Scanner clavier = new Scanner(System.in);
+        //if on appuie sur le bouton => button_Apparition_Train == true {
+            Boolean CheckSaisie2 = false;
+            Boolean CheckSaisie1 = false ;
+            if (nbTrainTotal < 4) {
+                do {
+                    try {
+                        System.out.print("Veuillez saisir le nom d'une Gare Principale : ");
+                        String name = clavier.next();
+                        Gare SelectGare = Gare.valueOf(name);
+                        CheckSaisie1 = true;
+                        if (garePrincipale.containsKey(SelectGare)) {
+                            apparitionTrain(SelectGare);
+                            CheckSaisie2 = true;
+                            /*
+                             *
+                             * Rajouter le code processing ici juste après l'appel de fonction
+                             *
+                             */
+                        } else {
+                            System.out.println("La gare choisie n'est pas une gare principale !");
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Erreur : La gare saisie ne correspond pas aux gares disponible");
+                        System.out.println("Voici les gares possibles : Namur, Bruxelles, Liege, Huy, Ottignies, Leuven");
+                    }
+                }while (!CheckSaisie1 || !CheckSaisie2);
+            }
 
+
+        //if on appuie sur le bouton => button_MainStation_To_Line == true {
+            Boolean CheckM = false;
+            for (Gare g : Gare.values()) {
+                if (nbTrain.get(g) >= 1 ){CheckM = true;}
+            }
+            if (CheckM) {
+                CheckSaisie1 = false;
+                CheckSaisie2 = false;
+                do {
+                    try {
+                        System.out.print("Veuillez saisir le nom d'une Gare Principale : ");
+                        String name = clavier.next();
+                        Gare SelectGare = Gare.valueOf(name);
+                        System.out.print("Veuillez saisir le nom d'une seconde Gare Principale : ");
+                        String name2 = clavier.next();
+                        Gare SelectGare2 = Gare.valueOf(name2);
+                        CheckSaisie1 = true;
+                        if (garePrincipale.containsKey(SelectGare) && garePrincipale.containsKey(SelectGare2)) {
+                            CheckSaisie2 = true;
+                            CheckSaisie1 = false;
+                            do {
+                                System.out.print("Veuillez saisir le quai où se trouve le tain (1 ou 2) : ");
+                                int q = clavier.nextInt();
+                                if (q == 1 || q == 2) {
+                                    CheckSaisie1 = true;
+                                    if (q == 1) {
+                                        Quai SelectQuai = Quai.Quai1;
+                                        MainStation_To_Line(SelectGare, SelectGare2, SelectQuai);
+                                        /*
+                                         *
+                                         * Rajouter le code processing ici juste après l'appel de fonction
+                                         * Pour le Quai 1
+                                         *
+                                         */
+                                    }
+                                    if (q == 2) {
+                                        Quai SelectQuai = Quai.Quai2;
+                                        MainStation_To_Line(SelectGare, SelectGare2, SelectQuai);
+                                        /*
+                                         *
+                                         * Rajouter le code processing ici juste après l'appel de fonction
+                                         * Pour le Quai 2
+                                         */
+                                    }
+                                }
+                            } while (!CheckSaisie1);
+                        } else {
+                            System.out.println("L'une des gares choisie n'est pas une gare principale !");
+                        }
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Erreur : Les gare saisie ne correspondent pas aux gares disponible");
+                        System.out.println("Voici les gares possibles : Namur, Bruxelles, Liege, Huy, Ottignies, Leuven");
+                    }
+                } while (!CheckSaisie1 || !CheckSaisie2);
+            }
+            else{System.out.println(("Il n'y actuellement aucun train dans les gares principales"));}
     }
-    public static String saisie(String message) {
-        Scanner sas = new Scanner(System.in) ;
-        System.out.print(message);
-        return sas.next() ;}
+
     public static void main(String[] args) {
+        TrainSystems trainSystems = new TrainSystems();
+        trainSystems.Lancement_Interaction();
+        trainSystems.apparitionTrain(Gare.Namur);
         /*Scanner clavier = new Scanner(System.in) ;
         System.out.print("Veuillez saisir une gare de départ: ");
         String depart = clavier.next();
@@ -574,7 +658,7 @@ public class TrainSystems {
         String destination = clavier.next();
         Gare GareDestination = Gare.valueOf(destination);
         TrainSystems trainSystems = new TrainSystems();
-        trainSystems.apparitionTrain(GareDepart);
+        trainSystems.apparitionTrain(Gare.Namur);
         trainSystems.apparitionTrain(GareDestination);
         trainSystems.MainStation_To_Line(Gare.Bruxelles, Gare.Namur, Quai.Quai1);
         trainSystems.MainStation_To_Line(Gare.Namur, Gare.Bruxelles, Quai.Quai1);
