@@ -62,7 +62,7 @@ public class TrainSystems {
                && Gares.keySet().size() == 3 
                && (\forall String g : Gares.keySet(); 
                      (g.equals("Bruxelles") || g.equals("Namur") || g.equals("Liege")) ==> Gares.get(g) >= 0);
-	*/
+	@*/
 	
 	//inv2
 	/*@ invariant nb_train.keySet().equals(\old(nb_train.keySet())); @*/
