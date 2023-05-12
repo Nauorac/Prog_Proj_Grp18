@@ -182,19 +182,19 @@ public class TrainSystems {
 		Freinage_Line.put("Namur", false);
 		Freinage_Line.put("Liege", false);
 	
-	// @inv13 temp ∈ ℕ
+	//@inv13 temp ∈ ℕ
 		int temp = 0;
 
-	// @inv14 temp2 ∈ ℕ
+	//@inv14 temp2 ∈ ℕ
 		int temp2 = 0;
 
-	// @inv15 State_system ∈ BOOL
+	//@inv15 State_system ∈ BOOL
 		boolean State_system = false;
 
-	// @inv16 State_brake ∈ BOOL
+	//@inv16 State_brake ∈ BOOL
 		boolean State_brake = false;
 
-	// @inv17 In_First_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
+	//@inv17 In_First_Line ∈ {Namur↦Bruxelles, Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Bruxelles↦Liege, Liege↦Bruxelles} → BOOL
 		Map<String, Boolean> In_First_Line = new HashMap<>();
 		In_First_Line.put("Namur↦Bruxelles", false);
 		In_First_Line.put("Bruxelles↦Namur", false);
@@ -202,9 +202,70 @@ public class TrainSystems {
 		In_First_Line.put("Liege↦Namur", false);
 		In_First_Line.put("Bruxelles↦Liege", false);
 		In_First_Line.put("Liege↦Bruxelles", false);
+	
+	//@inv18 temp3 ∈ BOOL
+		boolean temp3 = false;
 
+	//@inv19 temp4 ∈ BOOL
+		boolean temp4 = false;
 
+	//@inv20 GarePrincipale ∈ { Bruxelles, Namur, Liege}→ℕ
+		Map<String, Integer> GarePrincipale = new HashMap<>();
+		GarePrincipale.put("Bruxelles", 0);
+		GarePrincipale.put("Namur", 0);
+		GarePrincipale.put("Liege", 0);
 
+	//@inv21 GareSecondaire ∈ { Huy, Ottignies, Leuven}→ℕ
+		Map<String, Integer> GareSecondaire = new HashMap<>();
+		GareSecondaire.put("Huy", 0);
+		GareSecondaire.put("Ottignies", 0);
+		GareSecondaire.put("Leuven", 0);
+
+	//@inv22 Quai ∈ {Namur↦Quai1, Namur↦Quai2, Bruxelles↦Quai1, Bruxelles↦Quai2, Liege↦Quai1, Liege↦Quai2,Huy↦Quai1,Ottignies↦Quai1,Leuven↦Quai1}→BOOL
+		Map<String, Boolean> Quai = new HashMap<>();
+		Quai.put("Namur↦Quai1", false);
+		Quai.put("Namur↦Quai2", false);
+		Quai.put("Bruxelles↦Quai1", false);
+		Quai.put("Bruxelles↦Quai2", false);
+		Quai.put("Liege↦Quai1", false);
+		Quai.put("Liege↦Quai2", false);
+		Quai.put("Huy↦Quai1", false);
+		Quai.put("Ottignies↦Quai1", false);
+		Quai.put("Leuven↦Quai1", false);
+	
+	//@inv23 Feux ∈ {Lvn_Lge, Lge_Lvn, Lvn_Bxl, Bxl_Lvn, Bxl_Ott, Ott_Bxl, Ott_Nam, Nam_Ott, Huy_Nam, Nam_Huy, Lge_Huy, Huy_Lge} → BOOL
+    		Map<String, Boolean> Feux = new HashMap<>();
+    		Feux.put("Lvn_Lge", false);
+    		Feux.put("Lge_Lvn", false);
+    		Feux.put("Lvn_Bxl", false);
+   		Feux.put("Bxl_Lvn", false);
+    		Feux.put("Bxl_Ott", false);
+    		Feux.put("Ott_Bxl", false);
+    		Feux.put("Ott_Nam", false);
+    		Feux.put("Nam_Ott", false);
+    		Feux.put("Huy_Nam", false);
+    		Feux.put("Nam_Huy", false);
+    		Feux.put("Lge_Huy", false);
+    		Feux.put("Huy_Lge", false);
+
+	//theorem @inv24 Station_to_Line_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+
+	// @inv25 Secondary_Station_to_Line_Feux ∈ { Namur↦Bruxelles,Bruxelles↦Namur, Namur↦Liege, Liege↦Namur, Liege↦Bruxelles, Bruxelles↦Liege} → dom(Feux)
+
+	//@inv26 Line_to_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+
+	//@inv27 Line_to_Secondary_Station_Feux ∈ {Namur↦Bruxelles, Namur↦Liege, Bruxelles↦Namur, Bruxelles↦Liege, Liege↦Bruxelles, Liege↦Namur} → dom(Feux)
+
+	//@inv28 Appli_Voyageur ∈ {Namur,Liege,Bruxelles,Huy,Leuven,Ottignies} → BOOL    
+    		Map<String, Boolean> Appli_Voyageur = new HashMap<>();
+   		Appli_Voyageur.put("Namur", false);
+    		Appli_Voyageur.put("Liege", false);
+    		Appli_Voyageur.put("Bruxelles", false);
+    		Appli_Voyageur.put("Huy", false);
+    		Appli_Voyageur.put("Leuven", false);
+    		Appli_Voyageur.put("Ottignies", false);
+		
+	
     //Lancement de l'initialisation
     public TrainSystems() {
         initialisation();
