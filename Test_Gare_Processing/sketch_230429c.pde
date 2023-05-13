@@ -59,7 +59,6 @@ void setup() {
   spawn_button.addEventHandler(this, "handleButtonSpawn_click");
   GButton.useRoundCorners(false);
   
-  
 }
 
 void draw() {
@@ -194,16 +193,13 @@ void draw() {
     line(315,315,315,345);
 
   strokeWeight(3);
- 
   // *********************     DEPLACEMENT DU TRAIN   *********************
   //Toutes les positions où le train marque l'arret (donc aux gares, aiguillage)
   int[][] positions = {{100, 100}, {500, 100}, {300, 300}, {200, 100}, {300, 100}, {400, 100}, {150, 150}, {450, 150}, {200, 200}, {400, 200}, {300, 200}, {150, 250}, {250, 250}, {350, 250}, {450, 250}, {300, 300}};
-
   //train.get_X() += rectSpeedX;
   //train.get_Y() += rectSpeedY;
   //Si le train est à l'une des positions, il s'arrete
   if (limit_reach){
-
     fill(255,0,0);
     rect(500,425,200,50);
     fill(0);
@@ -213,11 +209,10 @@ void draw() {
   for (Train train : trains) {
     
   if (abs(train.get_speedX())>0 || abs(train.get_speedY()) > 0) {
-    fill(0, 255, 0);
-  } else {
+    fill(0, 255, 0);} 
+  else {
     fill(255, 0, 0);
   }
-  
   train.draw();
   train.move();
   
@@ -254,6 +249,7 @@ void draw() {
   }
   //rect(train.get_X(), train.get_Y(), 40, 15,3);
   
+  // **********************      APPLICATION    *************************
   //Application
   fill(220,220,220);
   rect(700,300,200,300);
