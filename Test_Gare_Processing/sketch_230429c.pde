@@ -10,6 +10,12 @@ GButton buttonN_L;
 GButton buttonB_N;
 GButton secondary_button;
 GButton spawn_button;
+String message = "Bienvenue dans notre système de transport";
+int index = 0;
+int x, y;
+int alpha = 0;
+int messageTime = 0; // variable pour suivre le temps écoulé depuis l'affichage du message
+boolean showMessage = true; // booléen pour indiquer si le message est affiché ou non
 
 float SCALING = 1.2;
 int LIMITE_TRAIN = 3;
@@ -22,6 +28,8 @@ boolean limit_reach = false;
 int[][] positions;
 
 void setup() {
+  x = width / 2;
+  y = height / 2;
   windowResizable(true);
   buttonB_L = new GButton(this, 0, 150*SCALING, 50*SCALING, 50*SCALING, "Bruxelles-Liege");
   buttonN_L = new GButton(this, 0, 200*SCALING, 50*SCALING, 50*SCALING, "Namur-Liege");
@@ -37,7 +45,7 @@ void setup() {
 
 
   size(1000, 700);
-  textSize(18);
+  textSize(40);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
   //imageMode(CENTER); // définir le mode d'affichage de l'image
@@ -48,9 +56,31 @@ void setup() {
   spawn_button.addEventHandler(this, "handleButtonSpawn_click");
   GButton.useRoundCorners(false);
   
+  
 }
 
 void draw() {
+  //Affichage message de Bienvenue
+  background(0);
+  if (index < message.length()) {
+    alpha += 5;
+    if (alpha > 255) {
+      alpha = 255;
+    }
+    fill(200, alpha);
+    text(message.substring(0, index + 1), x, y);
+  } else {
+    fill(200);
+    text(message, x, y);
+  }
+  index++;
+  messageTime ++;
+  if (messageTime >= 240) { // 240 frames = 4 secondes à 60 FPS
+    showMessage = false;
+    background(255);}
+    //Fin du message de bienvenue
+  if(showMessage == false){  
+  textSize(18);  
   scale(SCALING);
   background(255);
   noStroke();
@@ -241,7 +271,7 @@ void draw() {
   text(App_Titre, 700, 175);
   scale(1/SCALING);
 }
-
+}
 
 //FONCTION DES BOUTONS
 
