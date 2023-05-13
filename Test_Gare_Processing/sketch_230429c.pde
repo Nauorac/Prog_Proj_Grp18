@@ -11,8 +11,9 @@ GButton buttonB_N;
 GButton secondary_button;
 GButton spawn_button;
 
-float SCALING = 1;
+float SCALING = 1.2;
 int LIMITE_TRAIN = 3;
+
 boolean limit_reach = false;
 //float train1.get_X(100); // position horizontale initiale du rectangle
 //float train1.get_Y(100); // position verticale initiale du rectangle
@@ -250,13 +251,17 @@ public void handleButtonB_L_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {
     for (Train train : trains) {if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
       train.change_speedX(1);
-      train.change_sens_B_L(true);}
+      train.change_sens_B_L(true);
+        train.change_gareDestination("Bruxelles");
+    train.change_gareDepart("Liege");}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
 else if ((train.get_X() == 500 && train.get_Y() == 100)|| !train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
     train.change_speedX(-1);
     train.change_sens_B_L(false);
+        train.change_gareDestination("Liege");
+    train.change_gareDepart("Bruxelles");
     
-    }println(train);}}}
+    }}}}
 
 //Entre Namur et Liege
 public void handleButtonN_L_click(GButton button, GEvent event) {
@@ -266,14 +271,17 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {for (Train train : trains) {if((train.get_X() == 500 && train.get_Y() == 100)|| train.get_sens_N_L() && ((train.get_X() == 450 && train.get_Y() == 150)||(train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250))){
     train.change_speedX(-1);
     train.change_speedY(1);
-    train.change_sens_N_L(true);}
+    train.change_sens_N_L(true);
+    train.change_gareDestination("Namur");
+    train.change_gareDepart("Liege");}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
 else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_N_L() &&((train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250)||(train.get_X() == 450 && train.get_Y() == 150))){
     train.change_speedX(1);
     train.change_speedY(-1);
     train.change_sens_N_L(false);
-    
-    }println(train);}}}
+    train.change_gareDestination("Liege");
+    train.change_gareDepart("Namur");
+    }}}}
 
 //Bruxelles et Namur
 public void handleButtonB_N_click(GButton button, GEvent event) {
@@ -283,13 +291,16 @@ public void handleButtonB_N_click(GButton button, GEvent event) {
     train.change_speedX(1);
     train.change_speedY(1);
     println(train);
-    train.change_sens_B_N(true);}
+    train.change_sens_B_N(true);
+    train.change_gareDestination("Namur");
+    train.change_gareDepart("Bruxelles");}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
 else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_B_N() &&((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
     train.change_speedX(-1);
     train.change_speedY(-1);
     train.change_sens_B_N(false);
-    println("ok"+train);
+    train.change_gareDestination("Bruxelles");
+    train.change_gareDepart("Namur");;
     ;
   }println(train);}}}
     
@@ -332,5 +343,5 @@ public void handleButtonSpawn_click(GButton button, GEvent event) {
 if (event == GEvent.CLICKED) {
   int taille = trains.size();
   if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
-else {train1 = new Train(100,100,0,0);
+else {train1 = new Train(100,100,0,0, "X", "X");
 trains.add(train1);println("train ajouté");}}}
