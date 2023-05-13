@@ -1,6 +1,7 @@
 import g4p_controls.*;
 import java.awt.Font;
-
+Train train1;
+ArrayList<Train> trains = new ArrayList<Train>();
 boolean sens_B_L = true;
 boolean sens_N_L = true;
 boolean sens_B_N = true;
@@ -8,13 +9,15 @@ GButton buttonB_L;
 GButton buttonN_L;
 GButton buttonB_N;
 GButton secondary_button;
+GButton spawn_button;
 
-float SCALING = 1.8;
-
-float rectX = 100; // position horizontale initiale du rectangle
-float rectY = 100; // position verticale initiale du rectangle
-float rectSpeedX = 0; // vitesse de déplacement horizontale du rectangle
-float rectSpeedY = 0; // vitesse de déplacement verticale du rectangle
+float SCALING = 1;
+int LIMITE_TRAIN = 3;
+boolean limit_reach = false;
+//float train1.get_X(100); // position horizontale initiale du rectangle
+//float train1.get_Y(100); // position verticale initiale du rectangle
+//float rectSpeedX = 0; // vitesse de déplacement horizontale du rectangle
+//float rectSpeedY = 0; // vitesse de déplacement verticale du rectangle
 int[][] positions;
 
 void setup() {
@@ -23,23 +26,25 @@ void setup() {
   buttonN_L = new GButton(this, 0, 200*SCALING, 50*SCALING, 50*SCALING, "Namur-Liege");
   buttonB_N = new GButton(this, 0, 250*SCALING, 50*SCALING, 50*SCALING, "Bruxelles-Namur");
   secondary_button = new GButton(this, 0, 300*SCALING, 50*SCALING,50*SCALING, "Ligne secondaire");
+  spawn_button = new GButton(this, 0, 350*SCALING, 50*SCALING,50*SCALING, "Spawn Train");
   Font font = new Font ("Times New Roman", Font.PLAIN, int(10*SCALING));
   buttonB_L.setFont(font);
   buttonN_L.setFont(font);
   buttonB_N.setFont(font);
   secondary_button.setFont(font);
-  buttonB_L.setFont(font);
+  spawn_button.setFont(font);
 
 
-  size(1920, 1080);
+  size(1000, 700);
   textSize(18);
   textAlign(CENTER, CENTER);
   rectMode(CENTER);
-  imageMode(CENTER); // définir le mode d'affichage de l'image
+  //imageMode(CENTER); // définir le mode d'affichage de l'image
   buttonB_L.addEventHandler(this, "handleButtonB_L_click");
   buttonN_L.addEventHandler(this, "handleButtonN_L_click");
   buttonB_N.addEventHandler(this, "handleButtonB_N_click");
   secondary_button.addEventHandler(this, "handleButtonSecondary_click");
+  spawn_button.addEventHandler(this, "handleButtonSpawn_click");
   GButton.useRoundCorners(false);
   
 }
@@ -156,21 +161,7 @@ void draw() {
   line(300, 300, 315,315);
   line(285,315,285,345);
   line(315,315,315,345);
-  
-  //Dedoublement Huy
-  //line(425, 175, 400,175);
-  //line(375, 225, 375,200);
-  //line(375,200,400,175);
-  
-  //Dedoublement Leuven
-  //line(250, 100, 270, 80);
-  //line(350, 100, 330 ,80);
-  //line(330,80,270,80);
 
-  //Dedoublement Ottignies
-  //line(175, 175, 200,175);
-  //line(225, 225, 225,200);
-  //line(225,200,200,175);
   
   strokeWeight(3);
   
@@ -181,41 +172,65 @@ void draw() {
   //Toutes les positions où le train marque l'arret (donc aux gares, aiguillage)
   int[][] positions = {{100, 100}, {500, 100}, {300, 300}, {200, 100}, {300, 100}, {400, 100}, {150, 150}, {450, 150}, {200, 200}, {400, 200}, {300, 200}, {150, 250}, {250, 250}, {350, 250}, {450, 250}, {300, 300}};
 
-  rectX += rectSpeedX;
-  rectY += rectSpeedY;
+  //train.get_X() += rectSpeedX;
+  //train.get_Y() += rectSpeedY;
   //Si le train est à l'une des positions, il s'arrete
-  for (int i = 0; i < positions.length; i++) {
-    if (rectX == positions[i][0] && rectY == positions[i][1]) {
-      rectSpeedX = 0;
-      rectSpeedY = 0;
-      break; // sortir de la boucle si une position correspond
-    }
-  }
+  if (limit_reach){
 
-
-
-  if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
+    fill(255,0,0);
+    rect(500,425,200,50);
+    fill(0);
+    textSize(10);
+    String limit = "NOMBRES DE TRAIN AUTORISE DEPASSE";
+    text(limit, 500, 425);}
+  for (Train train : trains) {
+    
+  if (abs(train.get_speedX())>0 || abs(train.get_speedY()) > 0) {
     fill(0, 255, 0);
   } else {
     fill(255, 0, 0);
   }
   
-  buttonB_L.setEnabled(false);
-  buttonB_N.setEnabled(false);
-  buttonN_L.setEnabled(false);
-  secondary_button.setEnabled(false);
+  train.draw();
+  train.move();
+  
+  for (int i = 0; i < positions.length; i++) {
+    if (train.get_X() == positions[i][0] && train.get_Y() == positions[i][1]) {
+      train.change_speedX(0);
+      train.change_speedY(0);
+      break; // sortir de la boucle si une position correspond
+      
+    }
+  }//println(train);
+
+
+
+  //if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
+  //  fill(0, 255, 0);
+  //} else {
+  //  fill(255, 0, 0);
+  //}
+  
+  
+
+
+  //buttonB_L.setEnabled(false);
+  //buttonB_N.setEnabled(false);
+  //buttonN_L.setEnabled(false);
+  //secondary_button.setEnabled(false);
   
   //Activation des boutons quand nécessaire
   
-  if(rectX == 100 && rectY == 100 || rectX == 200 && rectY == 100|| rectX == 300 && rectY == 100|| rectX == 400 && rectY == 100|| rectX == 500 && rectY == 100){
-    buttonB_L.setEnabled(true);}
-  if(rectX == 100 && rectY == 100 || rectX == 150 && rectY == 150|| rectX == 200 && rectY == 200|| rectX == 250 && rectY == 250|| rectX == 300 && rectY == 300){
-    buttonB_N.setEnabled(true);}
-  if(rectX == 300 && rectY == 300 || rectX == 350 && rectY == 250|| rectX == 400 && rectY == 200|| rectX == 450 && rectY == 150|| rectX == 500 && rectY == 100){
-    buttonN_L.setEnabled(true);}
-  if((rectX == 200 && rectY == 100 && sens_B_L) || (rectX == 400 && rectY == 100 &&!sens_B_L)|| (rectX == 150 && rectY == 150 && sens_B_N)|| (rectX == 450 && rectY == 150 && sens_N_L)|| (rectX == 300 && rectY == 200) || (rectX == 150 && rectY == 250)|| (rectX == 250 && rectY == 250 &&!sens_B_N)|| (rectX == 350 && rectY == 250 && !sens_N_L)|| (rectX == 450 && rectY == 250)){
-    secondary_button.setEnabled(true);}
-  rect(rectX, rectY, 40, 15,3);
+  //if(train.get_X() == 100 && train.get_Y() == 100 || train.get_X() == 200 && train.get_Y() == 100|| train.get_X() == 300 && train.get_Y() == 100|| train.get_X() == 400 && train.get_Y() == 100|| train.get_X() == 500 && train.get_Y() == 100){
+  //  buttonB_L.setEnabled(true);}
+  //if(train.get_X() == 100 && train.get_Y() == 100 || train.get_X() == 150 && train.get_Y() == 150|| train.get_X() == 200 && train.get_Y() == 200|| train.get_X() == 250 && train.get_Y() == 250|| train.get_X() == 300 && train.get_Y() == 300){
+  //  buttonB_N.setEnabled(true);}
+  //if(train.get_X() == 300 && train.get_Y() == 300 || train.get_X() == 350 && train.get_Y() == 250|| train.get_X() == 400 && train.get_Y() == 200|| train.get_X() == 450 && train.get_Y() == 150|| train.get_X() == 500 && train.get_Y() == 100){
+  //  buttonN_L.setEnabled(true);}
+  //if((train.get_X() == 200 && train.get_Y() == 100 && sens_B_L) || (train.get_X() == 400 && train.get_Y() == 100 &&!sens_B_L)|| (train.get_X() == 150 && train.get_Y() == 150 && sens_B_N)|| (train.get_X() == 450 && train.get_Y() == 150 && sens_N_L)|| (train.get_X() == 300 && train.get_Y() == 200) || (train.get_X() == 150 && train.get_Y() == 250)|| (train.get_X() == 250 && train.get_Y() == 250 &&!sens_B_N)|| (train.get_X() == 350 && train.get_Y() == 250 && !sens_N_L)|| (train.get_X() == 450 && train.get_Y() == 250)){
+  //  secondary_button.setEnabled(true);}
+  }
+  //rect(train.get_X(), train.get_Y(), 40, 15,3);
   
   //Application
   fill(220,220,220);
@@ -232,79 +247,90 @@ void draw() {
 // Bouger le train entre Bruxelles et Liege
 public void handleButtonB_L_click(GButton button, GEvent event) {
   
-  if (event == GEvent.CLICKED) {if((rectX == 100 && rectY == 100)|| sens_B_L && ((rectX == 200 && rectY == 100)||(rectX == 400 && rectY == 100)||(rectX == 300 && rectY == 100))){
-    rectSpeedX = 1;
-    sens_B_L = true;}
+  if (event == GEvent.CLICKED) {
+    for (Train train : trains) {if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
+      train.change_speedX(1);
+      train.change_sens_B_L(true);}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
-else if ((rectX == 500 && rectY == 100)|| !sens_B_L && ((rectX == 200 && rectY == 100)||(rectX == 400 && rectY == 100)||(rectX == 300 && rectY == 100))){
-    rectSpeedX = -1;
-    sens_B_L = false;
+else if ((train.get_X() == 500 && train.get_Y() == 100)|| !train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
+    train.change_speedX(-1);
+    train.change_sens_B_L(false);
     
-    }}}
+    }println(train);}}}
 
 //Entre Namur et Liege
 public void handleButtonN_L_click(GButton button, GEvent event) {
   //Si le bouton est cliqué, grace a la position du train et une valeur booleenne qui permet de connaitre le sens du train, le if fait (LIEGE->NAMUR)
-  //Tout les (rectX == 350 && rectY == 150),... sont les arrets aux différentes gares et aiguillages
+  //Tout les (train.get_X() == 350 && train.get_Y() == 150),... sont les arrets aux différentes gares et aiguillages
   
-  if (event == GEvent.CLICKED) {if((rectX == 500 && rectY == 100)|| sens_N_L && ((rectX == 450 && rectY == 150)||(rectX == 400 && rectY == 200)||(rectX == 350 && rectY == 250))){
-    rectSpeedX = -1;
-    rectSpeedY = 1;
-    sens_N_L = true;}
+  if (event == GEvent.CLICKED) {for (Train train : trains) {if((train.get_X() == 500 && train.get_Y() == 100)|| train.get_sens_N_L() && ((train.get_X() == 450 && train.get_Y() == 150)||(train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250))){
+    train.change_speedX(-1);
+    train.change_speedY(1);
+    train.change_sens_N_L(true);}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
-else if ((rectX == 300 && rectY == 300)|| !sens_N_L &&((rectX == 400 && rectY == 200)||(rectX == 350 && rectY == 250)||(rectX == 450 && rectY == 150))){
-    rectSpeedX = 1;
-    rectSpeedY = -1;
-    sens_N_L = false;
+else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_N_L() &&((train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250)||(train.get_X() == 450 && train.get_Y() == 150))){
+    train.change_speedX(1);
+    train.change_speedY(-1);
+    train.change_sens_N_L(false);
     
-    }}}
+    }println(train);}}}
 
 //Bruxelles et Namur
 public void handleButtonB_N_click(GButton button, GEvent event) {
-  if (event == GEvent.CLICKED) {if((rectX == 100 && rectY == 100)|| sens_B_N && ((rectX == 150 && rectY == 150)||(rectX == 200 && rectY == 200)||(rectX == 250 && rectY == 250))){
-    rectSpeedX = 1;
-    rectSpeedY = 1;
-    sens_B_N = true;}
+  if (event == GEvent.CLICKED) {for (Train train : trains) {
+    println(train);
+    if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_N() && ((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
+    train.change_speedX(1);
+    train.change_speedY(1);
+    println(train);
+    train.change_sens_B_N(true);}
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
-else if ((rectX == 300 && rectY == 300)|| !sens_B_N &&((rectX == 150 && rectY == 150)||(rectX == 200 && rectY == 200)||(rectX == 250 && rectY == 250))){
-    rectSpeedX = -1;
-    rectSpeedY = -1;
-    sens_B_N = false;
-    ;}}}
+else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_B_N() &&((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
+    train.change_speedX(-1);
+    train.change_speedY(-1);
+    train.change_sens_B_N(false);
+    println("ok"+train);
+    ;
+  }println(train);}}}
     
     
 //Gestion des lignes secondaires
 
 public void handleButtonSecondary_click(GButton button, GEvent event) {
-  if (event == GEvent.CLICKED) {
-  if(rectX == 150 && rectY == 150 && sens_B_N){
-    rectSpeedY = 1;
+  if (event == GEvent.CLICKED) {for (Train train : trains) {
+  if(train.get_X() == 150 && train.get_Y() == 150 && train.get_sens_B_N()){
+    train.change_speedY(1);
     }
-  else if (rectX == 200 && rectY == 100 && sens_B_L){ 
-    rectSpeedY = 1;
-    rectSpeedX = 1;}
-  else if (rectX == 400 && rectY == 100 && !sens_B_L){
-    rectSpeedY = 1;
-    rectSpeedX = -1;}
-  else if (rectX == 450 && rectY == 150 && sens_N_L){
-    rectSpeedY = 1;}
-  else if (rectX == 350 && rectY == 250 && !sens_N_L){
-    rectSpeedX = 1;}
-  else if (rectX == 250 && rectY == 250 && !sens_B_N){ 
-    rectSpeedX = -1;}
-  else if (rectX == 150 && rectY == 150 && sens_B_N){
-    rectSpeedY = 1;}
+  else if (train.get_X() == 200 && train.get_Y() == 100 && train.get_sens_B_L()){ 
+    train.change_speedY(1);
+    train.change_speedX(1);}
+  else if (train.get_X() == 400 && train.get_Y() == 100 && !train.get_sens_B_L()){
+    train.change_speedY(1);
+    train.change_speedX(-1);;}
+  else if (train.get_X() == 450 && train.get_Y() == 150 && train.get_sens_N_L()){
+    train.change_speedY(1);}
+  else if (train.get_X() == 350 && train.get_Y() == 250 && !train.get_sens_N_L()){
+    train.change_speedX(1);;}
+  else if (train.get_X() == 250 && train.get_Y() == 250 && !train.get_sens_B_N()){ 
+    train.change_speedX(-1);}
+
     
-  else if (rectX == 300 && rectY == 200){ //COIN B-L
-    if(sens_B_L){rectSpeedX = 1;rectSpeedY = -1;}else{rectSpeedX = -1;rectSpeedY = -1;}}
+  else if (train.get_X() == 300 && train.get_Y() == 200){ //COIN B-L
+    if(train.get_sens_B_L()){train.change_speedX(1); train.change_speedY(-1);}else{train.change_speedX(-1); train.change_speedY(-1);}}
     
-  else if (rectX == 450 && rectY == 250){ //COIN N-L
-    if(sens_N_L){rectSpeedX = -1;}else{rectSpeedY = -1;}}
+  else if (train.get_X() == 450 && train.get_Y() == 250){ //COIN N-L
+    if(train.get_sens_N_L()){train.change_speedX(-1);}else{train.change_speedY(-1);}}
     
-  else if (rectX == 150 && rectY == 250 ){ //COIN B-N  bon
-    if(sens_B_N){rectSpeedX = 1;}else{rectSpeedY = -1;}
+  else if (train.get_X() == 150 && train.get_Y() == 250 ){ //COIN B-N  bon
+    if(train.get_sens_B_N()){train.change_speedX(1);}else{train.change_speedY(-1);}
     }
 //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
 
     
-    }}
+    println(train);}}}
+public void handleButtonSpawn_click(GButton button, GEvent event) {
+if (event == GEvent.CLICKED) {
+  int taille = trains.size();
+  if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
+else {train1 = new Train(100,100,0,0);
+trains.add(train1);println("train ajouté");}}}
