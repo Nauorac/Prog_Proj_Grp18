@@ -1,20 +1,23 @@
-Erreur relevé : 
+Erreurs relevées : 
+------------------
 Les boutons ne sont pas vraiment correct 
-Il faut 9 boutons pour les neufs événements. 
-Lorsqu'on clique sur l'un des neufs, un paramètre doit apparaître. 
-Exemple : Spawn train 
-Lorsque je clique dessus, il doit me demander dans quelle gare je veux qu'il apparaisse 
-et non le faire spawn sur bruxelles direct. 
 
-Il faut la même chose pour les autres événements. 
+	Il faut 9 boutons pour les neufs événements. 
+	Lorsqu'on clique sur l'un des neufs, un paramètre doit apparaître. 
+	Exemple : Spawn train 
+	Lorsque je clique dessus, il doit me demander dans quelle gare je veux qu'il apparaisse 
+	et non le faire spawn sur bruxelles direct. 
+
+	Il faut la même chose pour les autres événements. 
 
 
 Erreur relevé dans les boutons créés : 
-
+--------------------------------------
 Supposons que je le clique 4x sur SpawnTrain. Il ne faut pas incrémenter le nombre du train
 si il y a deja un train qui a spawn et qui n'a pas encore bougé. 
 
 Les lignes de déplacement : 
+---------------------------
 Si il y a deux trains sur la même ligne, ils ne doivent pas avancer tous les deux ! 
 Imaginons, l'un rentre en gare et l'autre continue sur la voie. 
 
