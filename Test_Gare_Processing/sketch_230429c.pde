@@ -10,6 +10,9 @@ GButton buttonN_L;
 GButton buttonB_N;
 GButton secondary_button;
 GButton spawn_button;
+GButton Bruxelles ; 
+GButton Namur;
+GButton Liege;
 String message = "Bienvenue dans notre système de transport";
 int index = 0;
 int x, y;
@@ -371,7 +374,56 @@ public void handleButtonSecondary_click(GButton button, GEvent event) {
     println(train);}}}
 public void handleButtonSpawn_click(GButton button, GEvent event) {
 if (event == GEvent.CLICKED) {
-  int taille = trains.size();
+  Bruxelles = new GButton(this, 100, 500, 90, 50, "Bruxelles");
+  Namur = new GButton(this, 200, 500, 90, 50, "Namur");
+  Liege = new GButton(this, 300, 500, 90, 50, "Liege");
+  Bruxelles.addEventHandler(this, "handleButtonBruxelles");
+  Namur.addEventHandler(this, "handleButtonNamur");
+  Liege.addEventHandler(this, "handleButtonLiege");
+  /*int taille = trains.size();
   if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
 else {train1 = new Train(100,100,0,0, "X", "X");
-trains.add(train1);println("train ajouté");}}}
+trains.add(train1);println("train ajouté");}*/}}
+
+/*public void handleButtonBruxelles_click(GButton button, GEvent event){
+  //if(event == GEvent.CLICKED){
+    int taille = trains.size();
+    if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
+  else {train1 = new Train(100,100,0,0, "X", "X");
+  trains.add(train1);println("train ajouté");}
+  //}
+}*/
+
+  //Namur (300,300) VERT
+  //Liege (500,100) BLEU
+
+public void handleButtonBruxelles(GButton button, GEvent event){
+if (event == GEvent.CLICKED) {
+  int taille = trains.size();
+  if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
+  else {train1 = new Train(100,100,0,0, "X", "X");
+  trains.add(train1);println("train ajouté");
+  Bruxelles.dispose();
+  Namur.dispose();
+  Liege.dispose();}}}
+
+public void handleButtonNamur(GButton button, GEvent event){
+if (event == GEvent.CLICKED) {
+  int taille = trains.size();
+  if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
+  else {train1 = new Train(300,300,0,0, "X", "X");
+  trains.add(train1);println("train ajouté");
+  Bruxelles.dispose();
+  Namur.dispose();
+  Liege.dispose();}}}
+  
+public void handleButtonLiege(GButton button, GEvent event){
+if (event == GEvent.CLICKED) {
+  int taille = trains.size();
+  if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
+  else {train1 = new Train(500,100,0,0, "X", "X");
+  trains.add(train1);println("train ajouté");
+  Bruxelles.dispose();
+  Namur.dispose();
+  Liege.dispose();}}}
+    
