@@ -31,8 +31,8 @@ boolean get_sens_N_L(){return sens_N_L;}
 String get_gareDepart(){return gareDepart;}
 String get_gareDestination(){return gareDestination;}
 
-void change_gareDepart(String gare){gareDepart = gare}
-void change_gareDestination(String gare){gareDestination = gare}
+void change_gareDepart(String gare){gareDepart = gare;}
+void change_gareDestination(String gare){gareDestination = gare;}
 
 void change_sens_B_L(boolean sens){sens_B_L = sens;}
 void change_sens_B_N(boolean sens){sens_B_N = sens;}
