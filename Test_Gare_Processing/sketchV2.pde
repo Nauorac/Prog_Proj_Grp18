@@ -284,7 +284,7 @@ public void handleButtonB_L_click(GButton button, GEvent event) {
 
 //Entre Namur et Liege
 public void handleButtonN_L_click(GButton button, GEvent event) {
-  checkCollision_LineOblique()
+  checkCollision_LineOblique();
   //Si le bouton est cliqué, grace a la position du train et une valeur booleenne qui permet de connaitre le sens du train, le if fait (LIEGE->NAMUR)
   //Tout les (train.get_X() == 350 && train.get_Y() == 150),... sont les arrets aux différentes gares et aiguillages
   if (event == GEvent.CLICKED) {for (Train train : trains) {if((train.get_X() == 500 && train.get_Y() == 100)|| train.get_sens_N_L() && ((train.get_X() == 450 && train.get_Y() == 150)||(train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250))){
@@ -304,7 +304,7 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
 
 //Bruxelles et Namur
 public void handleButtonB_N_click(GButton button, GEvent event) {
-  checkCollision_LineOblique()
+  checkCollision_LineOblique();
   if (event == GEvent.CLICKED) {for (Train train : trains) {
     println(train);
     if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_N() && ((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
