@@ -1,6 +1,9 @@
 import g4p_controls.*;
 import java.awt.Font;
+
 Train train1;
+
+//création d'une array liste reprennant tout les trains créer
 ArrayList<Train> trains = new ArrayList<Train>();
 boolean sens_B_L = true;
 boolean sens_N_L = true;
@@ -13,6 +16,7 @@ GButton spawn_button;
 GButton Bruxelles ; 
 GButton Namur;
 GButton Liege;
+
 String message = "Bienvenue dans notre système de transport";
 int index = 0;
 int x, y;
@@ -20,8 +24,8 @@ int alpha = 0;
 int messageTime = 0; // variable pour suivre le temps écoulé depuis l'affichage du message
 boolean showMessage = true; // booléen pour indiquer si le message est affiché ou non
 
-float SCALING = 1.2;
-int LIMITE_TRAIN = 3;
+float SCALING = 1.2; //taille de la fenetre
+int LIMITE_TRAIN = 3; //limite de train sur le circuit
 
 boolean limit_reach = false;
 //float train1.get_X(100); // position horizontale initiale du rectangle
@@ -47,17 +51,18 @@ void setup() {
   spawn_button.setFont(font);
 
 
-  size(1000, 700);
-  textSize(40);
-  textAlign(CENTER, CENTER);
-  rectMode(CENTER);
-  //imageMode(CENTER); // définir le mode d'affichage de l'image
+  size(1000, 700); //taille de la fenetre
+  textSize(40); //taille de la police d'ecriture
+  textAlign(CENTER, CENTER); //aligne le texte sur son centre et pas son coin haut gauche (qui est l'option par defaut)
+  rectMode(CENTER); // aligne le rectangle en son point central et pas son coin gauche
+  
+  //Ajout des event quand on clique sur les boutons (lie le bouton à une fonction)
   buttonB_L.addEventHandler(this, "handleButtonB_L_click");
   buttonN_L.addEventHandler(this, "handleButtonN_L_click");
   buttonB_N.addEventHandler(this, "handleButtonB_N_click");
   secondary_button.addEventHandler(this, "handleButtonSecondary_click");
   spawn_button.addEventHandler(this, "handleButtonSpawn_click");
-  GButton.useRoundCorners(false);
+  GButton.useRoundCorners(false); // crée des boutons avec des coins non arrondi, plus esthétique je trouve
   
 }
 
@@ -96,7 +101,7 @@ void draw() {
     //Huy (400,200) CYAN
   
   // *******************       DESSIN DES GARES  *************************
-  // Dessiner (lge)
+  // Dessiner (LIEGE)
     strokeWeight(1);
     fill(0, 0, 255,127);
     rect(520,100,100,50);
@@ -104,38 +109,35 @@ void draw() {
     String gare_L = "Liege";
     text(gare_L, 500, 130);
   
-  // Dessiner (namur)
+  // Dessiner (NAMUR)
     fill(0, 255, 0,127);
     rect(300,320,50,100);
     fill(0);
     String gare_N = "Namur";
     text(gare_N, 300, 260);
   
-  // Dessiner (BXL)
+  // Dessiner (BRUXELLES)
     fill(255, 0, 0,127);
     rect(80,100,100,50);
     fill(0);
     String gare_B = "Bruxelles";
     text(gare_B, 100, 130);
   
-  // Dessiner (ott)
-  //noStroke();
+  // Dessiner (OTTIGNIES)
     fill(255, 255, 0, 127);
     rect(200,200, 75, 75);
     fill(0);
     String gare_O = "Ott";
     text(gare_O, 185, 215);
 
-  // Dessiner (huy)
-  //noStroke();
+  // Dessiner (HUY)
     fill(0, 255, 255, 127);
     rect(400,200, 75, 75);
     fill(0);
     String gare_H = "Huy";
     text(gare_H, 415, 215);
   
-  // Dessiner (lvn)
-  //noStroke();
+  // Dessiner (LEUVEN)
     fill(255, 0, 255, 127);
     rect(300,90, 100, 60);
     fill(0);
@@ -165,11 +167,12 @@ void draw() {
     stroke(0);
     strokeWeight(5);
 
+
   // Les grandes voies principales
     fill(0,255,0);
-    line(100, 100, 300, 300);
-    line(300, 300, 500, 100);
-    line(100, 100, 500, 100);
+    line(100, 100, 300, 300); // dessine la grande ligne entre Bruxelles et Namur
+    line(300, 300, 500, 100); // dessine la grande ligne entre Namur et Liege
+    line(100, 100, 500, 100); // dessine la grande ligne entre Bruxelles et Liege
   
     fill(255);
     strokeWeight(1);
@@ -193,12 +196,13 @@ void draw() {
     line(315,315,315,345);
 
   strokeWeight(3);
+  
   // *********************     DEPLACEMENT DU TRAIN   *********************
   //Toutes les positions où le train marque l'arret (donc aux gares, aiguillage)
-  int[][] positions = {{100, 100}, {500, 100}, {300, 300}, {200, 100}, {300, 100}, {400, 100}, {150, 150}, {450, 150}, {200, 200}, {400, 200}, {300, 200}, {150, 250}, {250, 250}, {350, 250}, {450, 250}, {300, 300}};
   //train.get_X() += rectSpeedX;
   //train.get_Y() += rectSpeedY;
   //Si le train est à l'une des positions, il s'arrete
+  //Affichage d'un message sur l'ecran pour avertir que le nombre maximal de train autorisé sur le circuit est deja dépassé
   if (limit_reach){
     fill(255,0,0);
     rect(500,425,200,50);
@@ -206,16 +210,24 @@ void draw() {
     textSize(10);
     String limit = "NOMBRES DE TRAIN AUTORISE DEPASSE";
     text(limit, 500, 425);}
+   
+  // crée une boucle qui reprend tout les trains de l'array list, le train est défini par la variable "train"
   for (Train train : trains) {
-    
+  //colore le train en vert lorsqu'il bouge
   if (abs(train.get_speedX())>0 || abs(train.get_speedY()) > 0) {
     fill(0, 255, 0);} 
   else {
     fill(255, 0, 0);
   }
+  
+  //dessine le train et le fait bouger
   train.draw();
   train.move();
   
+
+  //Toutes les positions où le train marque l'arret (donc aux gares, aiguillage)
+  int[][] positions = {{100, 100}, {500, 100}, {300, 300}, {200, 100}, {300, 100}, {400, 100}, {150, 150}, {450, 150}, {200, 200}, {400, 200}, {300, 200}, {150, 250}, {250, 250}, {350, 250}, {450, 250}, {300, 300}};
+  //Stop le train si ses coordonnées X Y correspondent a une coordonnées de la liste ci-dessus
   for (int i = 0; i < positions.length; i++) {
     if (train.get_X() == positions[i][0] && train.get_Y() == positions[i][1]) {
       train.change_speedX(0);
@@ -223,58 +235,41 @@ void draw() {
       break; // sortir de la boucle si une position correspond
       
     }
-  }//println(train);
-
-  //if (abs(rectSpeedY)>0 || abs(rectSpeedX) > 0) {
-  //  fill(0, 255, 0);
-  //} else {
-  //  fill(255, 0, 0);
-  //}
-
-  //buttonB_L.setEnabled(false);
-  //buttonB_N.setEnabled(false);
-  //buttonN_L.setEnabled(false);
-  //secondary_button.setEnabled(false);
-  
-  //Activation des boutons quand nécessaire
-  
-  //if(train.get_X() == 100 && train.get_Y() == 100 || train.get_X() == 200 && train.get_Y() == 100|| train.get_X() == 300 && train.get_Y() == 100|| train.get_X() == 400 && train.get_Y() == 100|| train.get_X() == 500 && train.get_Y() == 100){
-  //  buttonB_L.setEnabled(true);}
-  //if(train.get_X() == 100 && train.get_Y() == 100 || train.get_X() == 150 && train.get_Y() == 150|| train.get_X() == 200 && train.get_Y() == 200|| train.get_X() == 250 && train.get_Y() == 250|| train.get_X() == 300 && train.get_Y() == 300){
-  //  buttonB_N.setEnabled(true);}
-  //if(train.get_X() == 300 && train.get_Y() == 300 || train.get_X() == 350 && train.get_Y() == 250|| train.get_X() == 400 && train.get_Y() == 200|| train.get_X() == 450 && train.get_Y() == 150|| train.get_X() == 500 && train.get_Y() == 100){
-  //  buttonN_L.setEnabled(true);}
-  //if((train.get_X() == 200 && train.get_Y() == 100 && sens_B_L) || (train.get_X() == 400 && train.get_Y() == 100 &&!sens_B_L)|| (train.get_X() == 150 && train.get_Y() == 150 && sens_B_N)|| (train.get_X() == 450 && train.get_Y() == 150 && sens_N_L)|| (train.get_X() == 300 && train.get_Y() == 200) || (train.get_X() == 150 && train.get_Y() == 250)|| (train.get_X() == 250 && train.get_Y() == 250 &&!sens_B_N)|| (train.get_X() == 350 && train.get_Y() == 250 && !sens_N_L)|| (train.get_X() == 450 && train.get_Y() == 250)){
-  //  secondary_button.setEnabled(true);}
   }
-  //rect(train.get_X(), train.get_Y(), 40, 15,3);
+  }//fin de la boucle reprenant tout les trains
+
   
   // **********************      APPLICATION    *************************
   //Application
-  fill(220,220,220);
+  fill(220,220,220); // couleur gris
   rect(700,300,200,300);
   fill(0);
   String App_Titre = "Application";
   text(App_Titre, 700, 175);
-  scale(1/SCALING);
+  scale(1/SCALING); //permet d'eviter le bug des boutons avec la fonction scale()
 }
 }
 
 // **********************      FONCTION DES BOUTONS    *************************
 // Bouger le train entre Bruxelles et Liege
 public void handleButtonB_L_click(GButton button, GEvent event) {
+  // si le bouton est cliqué
   if (event == GEvent.CLICKED) {
+    //Pour chaques train, si s'il est a une gare, change son sens et le fait partir, s'il est sur la voie entre deux gares principales, on verifie son sens et sa position pour le faire continuer
     for (Train train : trains) {if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
+      //Envoie le train vers Liege
       train.change_speedX(1);
+      //si sens_B_L = true, se dirige vers Liege
       train.change_sens_B_L(true);
-        train.change_gareDestination("Bruxelles");
-    train.change_gareDepart("Liege");}
-  //Le else if permet de faire le chemin inverse (NAMUR->LIEGE)
+      train.change_gareDestination("Liege");
+    train.change_gareDepart("Bruxelles");}
+  //Le else if permet de faire le chemin inverse (LIEGE->BRUXELLES)
   else if ((train.get_X() == 500 && train.get_Y() == 100)|| !train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
-      train.change_speedX(-1);
-      train.change_sens_B_L(false);
-          train.change_gareDestination("Liege");
-      train.change_gareDepart("Bruxelles");
+    //envoie le train vers Bruxelles
+    train.change_speedX(-1);
+    train.change_sens_B_L(false);
+    train.change_gareDestination("Bruxelles");
+    train.change_gareDepart("Liege");
     }}}}
 
 //Entre Namur et Liege
@@ -284,6 +279,7 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {for (Train train : trains) {if((train.get_X() == 500 && train.get_Y() == 100)|| train.get_sens_N_L() && ((train.get_X() == 450 && train.get_Y() == 150)||(train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250))){
     train.change_speedX(-1);
     train.change_speedY(1);
+    // sens_N_L = true -> le train va de Liege vers Namur
     train.change_sens_N_L(true);
     train.change_gareDestination("Namur");
     train.change_gareDepart("Liege");}
@@ -291,6 +287,7 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
   else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_N_L() &&((train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250)||(train.get_X() == 450 && train.get_Y() == 150))){
       train.change_speedX(1);
       train.change_speedY(-1);
+      // sens_N_L = false -> le train va de Liege vers Namur
       train.change_sens_N_L(false);
       train.change_gareDestination("Liege");
       train.change_gareDepart("Namur");
@@ -299,11 +296,10 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
 //Bruxelles et Namur
 public void handleButtonB_N_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {for (Train train : trains) {
-    println(train);
     if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_N() && ((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
     train.change_speedX(1);
     train.change_speedY(1);
-    println(train);
+    // sens_B_N = true -> le train va de Bruxelles vers Namur
     train.change_sens_B_N(true);
     train.change_gareDestination("Namur");
     train.change_gareDepart("Bruxelles");}
@@ -311,15 +307,17 @@ public void handleButtonB_N_click(GButton button, GEvent event) {
   else if ((train.get_X() == 300 && train.get_Y() == 300)|| !train.get_sens_B_N() &&((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
       train.change_speedX(-1);
       train.change_speedY(-1);
+      // sens_B_N = false -> le train va de Namur vers Bruxelles
       train.change_sens_B_N(false);
       train.change_gareDestination("Bruxelles");
-      train.change_gareDepart("Namur");;
-      ;
-    }println(train);}}}
+      train.change_gareDepart("Namur");
+      
+    }}}}
     
     
 //Gestion des lignes secondaires
 public void handleButtonSecondary_click(GButton button, GEvent event) {
+    //Si le bouton est cliqué, on va vérifier chaque sens de trains pour savoir s'il peut partir sur la voie secondaire, si oui alors on lui donne la speedX et speedY pour bouger
   if (event == GEvent.CLICKED) {for (Train train : trains) {
   if(train.get_X() == 150 && train.get_Y() == 150 && train.get_sens_B_N()){
     train.change_speedY(1);}
@@ -342,8 +340,7 @@ public void handleButtonSecondary_click(GButton button, GEvent event) {
   else if (train.get_X() == 150 && train.get_Y() == 250 ){ //COIN B-N  bon
     if(train.get_sens_B_N()){train.change_speedX(1);}else{train.change_speedY(-1);}
     }
-//Le else if permet de faire le chemin inverse (NAMUR->LIEGE) 
-    println(train);}}}
+    }}}
 
 public void handleButtonSpawn_click(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {
@@ -353,10 +350,7 @@ public void handleButtonSpawn_click(GButton button, GEvent event) {
     Bruxelles.addEventHandler(this, "handleButtonBruxelles");
     Namur.addEventHandler(this, "handleButtonNamur");
     Liege.addEventHandler(this, "handleButtonLiege");
-    /*int taille = trains.size();
-    if (taille >= LIMITE_TRAIN){println("trop de train");limit_reach = true;}
-  else {train1 = new Train(100,100,0,0, "X", "X");
-  trains.add(train1);println("train ajouté");}*/}}
+    }}
 
   /*public void handleButtonBruxelles_click(GButton button, GEvent event){
     //if(event == GEvent.CLICKED){
