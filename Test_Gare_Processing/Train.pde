@@ -70,11 +70,11 @@ speedY = z;}
 
 //Arrêter un train 
 void stop(){
-  isStopped=true;}
+  this.isStopped=true;}
 
 //fais bouger le train
 void move(){
-  if (!isStopped){
+  if (!this.isStopped){// Ne bouge pas si le train est arrêté
     X+=speedX;
     Y+=speedY;}}
 
