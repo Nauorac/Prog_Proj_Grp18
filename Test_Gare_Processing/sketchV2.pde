@@ -412,7 +412,7 @@ public void checkCollision_LineDroite() { //Entre Bruxelles et Liege
     for (int j = i + 1; j < trains.size(); j++) {
       if (trains.get(i).get_Y() == trains.get(j).get_Y() && abs(trains.get(i).get_X() - trains.get(j).get_X()) < 300) {
         trains.get(j).stop();
-        println("Collion détecté entre train " + (i+1) + " et train " + (j+1));
+        println("Collision détecté entre train " + (i+1) + " et train " + (j+1));
       }
     }
   }
@@ -422,7 +422,7 @@ public void checkCollision_LigneOblique() { // Entre B_N et N_L
     for (int j = i + 1; j < trains.size(); j++) {
       if (abs(trains.get(i).get_X() - trains.get(j).get_X()) < 300) {
         trains.get(j).stop();
-        println("Collision detected between train " + (i+1) + " and train " + (j+1));
+        println("Collision détecté entre train " + (i+1) + " et train " + (j+1));
       }
     }
   }
