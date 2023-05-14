@@ -1,5 +1,9 @@
 class Train {
 
+
+//isStopped détermine si le train est à l'arrêt ou non. 
+boolean isStopped;
+
   //Position X et Y du train
 float X;
 float Y;
@@ -29,6 +33,7 @@ Train (float X, float Y, float speedX, float speedY, String gareDepart, String g
   this.sens_N_L = true;
   this.gareDepart = gareDepart;
   this.gareDestination = gareDestination;
+  this.isStopped = false;
 }
 
 //Toutes les fonctions get_
@@ -63,10 +68,15 @@ speedX = z;}
 void change_speedY(float z){
 speedY = z;}
 
+//Arrêter un train 
+void stop(){
+  isStopped=true;}
+
 //fais bouger le train
 void move(){
-  X+=speedX;
-  Y+=speedY;}
+  if (!isStopped){
+    X+=speedX;
+    Y+=speedY;}}
 
 //dessine le rectangle qui représentera le train
 void draw(){
