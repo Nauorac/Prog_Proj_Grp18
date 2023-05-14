@@ -71,6 +71,22 @@ speedY = z;}
 //Arrêter un train 
 void stop(){
   this.isStopped=true;}
+  
+void startBL() {// Redémarrer un train après collision entre bruxelles et liège
+  this.isStopped=false;
+  this.change_sens_B_L(true);
+  this.change_speedX(1);
+}
+void startBN() {// Redémarrer un train après collision entre bruxelles et Namur
+  this.isStopped=false;
+  this.change_sens_B_N(true);
+  this.change_speedY(1);
+}
+void startNL() {// Redémarrer un train après collision entre Namur et Liege
+  this.isStopped=false;
+  this.change_sens_N_L(true);
+  this.change_speedY(1);
+}
 
 //fais bouger le train
 void move(){
