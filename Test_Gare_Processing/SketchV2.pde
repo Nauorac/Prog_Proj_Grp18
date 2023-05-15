@@ -267,7 +267,7 @@ void draw() {
 // **********************      FONCTION DES BOUTONS    *************************
 // Bouger le train entre Bruxelles et Liege
 public void handleButtonB_L_click(GButton button, GEvent event) {
-  checkCollision_B_L();
+  checkCollision_LineDroite();
   if (event == GEvent.CLICKED) {
     for (Train train : trains) {if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_L() && ((train.get_X() == 200 && train.get_Y() == 100)||(train.get_X() == 400 && train.get_Y() == 100)||(train.get_X() == 300 && train.get_Y() == 100))){
       train.change_speedX(1);
@@ -284,7 +284,7 @@ public void handleButtonB_L_click(GButton button, GEvent event) {
 
 //Entre Namur et Liege
 public void handleButtonN_L_click(GButton button, GEvent event) {
-  checkCollision_N_L();
+  checkCollision_LigneOblique();
   //Si le bouton est cliqué, grace a la position du train et une valeur booleenne qui permet de connaitre le sens du train, le if fait (LIEGE->NAMUR)
   //Tout les (train.get_X() == 350 && train.get_Y() == 150),... sont les arrets aux différentes gares et aiguillages
   if (event == GEvent.CLICKED) {for (Train train : trains) {if((train.get_X() == 500 && train.get_Y() == 100)|| train.get_sens_N_L() && ((train.get_X() == 450 && train.get_Y() == 150)||(train.get_X() == 400 && train.get_Y() == 200)||(train.get_X() == 350 && train.get_Y() == 250))){
@@ -304,7 +304,7 @@ public void handleButtonN_L_click(GButton button, GEvent event) {
 
 //Bruxelles et Namur
 public void handleButtonB_N_click(GButton button, GEvent event) {
-  checkCollision_B_N();
+  checkCollision_LigneOblique();
   if (event == GEvent.CLICKED) {for (Train train : trains) {
     println(train);
     if((train.get_X() == 100 && train.get_Y() == 100)|| train.get_sens_B_N() && ((train.get_X() == 150 && train.get_Y() == 150)||(train.get_X() == 200 && train.get_Y() == 200)||(train.get_X() == 250 && train.get_Y() == 250))){
@@ -407,41 +407,22 @@ public void handleButtonLiege(GButton button, GEvent event){
     Namur.dispose();
     Liege.dispose();}}}
     
-public void checkCollision_B_L() { //Entre Bruxelles et Liege
+public void checkCollision_LineDroite() { //Entre Bruxelles et Liege
   for (int i = 0; i < trains.size(); i++) {
     for (int j = i + 1; j < trains.size(); j++) {
-      if (trains.get(i).get_Y() == trains.get(j).get_Y() && abs(trains.get(i).get_X() - trains.get(j).get_X()) >170 && abs(trains.get(i).get_X() - trains.get(j).get_X())< 300) {
+      if (trains.get(i).get_Y() == trains.get(j).get_Y() && abs(trains.get(i).get_X() - trains.get(j).get_X()) < 300) {
         trains.get(j).stop();
-        println("Collion détecté entre train " + (i+1) + " et train " + (j+1));
-        delay(2000); // attendre 2 secondes
-        trains.get(j).startBL(); // redémarrer le train
-        println("Risque de collision évité, train redémarre.");
+        println("Collision détecté entre train " + (i+1) + " et train " + (j+1));
       }
     }
   }
 }
-public void checkCollision_B_N() { // Entre Bruxelles et Namur
+public void checkCollision_LigneOblique() { // Entre B_N et N_L
   for (int i = 0; i < trains.size(); i++) {
     for (int j = i + 1; j < trains.size(); j++) {
       if (abs(trains.get(i).get_X() - trains.get(j).get_X()) < 300) {
         trains.get(j).stop();
-        println("Risque de collision entre train " + (i+1) + " et train " + (j+1));
-        delay(2000); // attendre 2 secondes
-        trains.get(j).startBN(); // redémarrer le train
-        println("Risque de collision évité, train redémarre.");
-      }
-    }
-  }
-}
-public void checkCollision_N_L() { // Entre Namur et Liège
-  for (int i = 0; i < trains.size(); i++) {
-    for (int j = i + 1; j < trains.size(); j++) {
-      if (abs(trains.get(i).get_X() - trains.get(j).get_X()) < 300) {
-        trains.get(j).stop();
-        println("Risque de collision entre train " + (i+1) + " et train " + (j+1));
-        delay(2000); // attendre 2 secondes
-        trains.get(j).startNL(); // redémarrer le train
-        println("Risque de collision évité, train redémarre.");
+        println("Collision détecté entre train " + (i+1) + " et train " + (j+1));
       }
     }
   }
